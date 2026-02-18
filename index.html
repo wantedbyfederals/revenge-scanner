@@ -33,6 +33,21 @@
             position: relative;
         }
 
+        /* ANIMACIONES DE ENTRADA */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .reveal-1 { animation: fadeInUp 0.6s ease out forwards; }
+        .reveal-2 { animation: fadeInUp 0.8s ease out forwards; opacity: 0; }
+        .reveal-3 { animation: fadeIn 1.2s ease forwards; opacity: 0; }
+
         .bg-glow {
             position: absolute;
             top: 0;
@@ -82,44 +97,21 @@
 
         .btn-min { background: #f1c40f; }
         .btn-close { background: #e74c3c; }
-        .control-btn:hover { transform: scale(1.2); filter: brightness(1.2); }
+
+        .dashboard {
+            flex: 1;
+            /* AJUSTE: Más padding inferior para separar el pie de página del borde */
+            padding: 80px 60px 60px 60px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
 
         .welcome-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 45px;
-        }
-
-        .notif-bell {
-            cursor: pointer;
-            position: relative;
-            padding: 10px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
-        }
-
-        .notif-bell:hover { background: rgba(255,255,255,0.08); transform: scale(1.05); }
-
-        .notif-dot {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            background: #e74c3c;
-            border-radius: 50%;
-            border: 2px solid var(--bg-color);
-        }
-
-        .dashboard {
-            flex: 1;
-            padding: 80px 60px 40px 60px;
-            display: flex;
-            flex-direction: column;
-            z-index: 1;
         }
 
         h1 {
@@ -170,7 +162,6 @@
         .card-title { font-size: 17px; font-weight: 600; color: #fff; }
         .card-desc { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; margin-bottom: 25px; }
 
-        /* TIPOGRAFÍA MEJORADA EN BOTONES */
         .btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -180,7 +171,6 @@
             cursor: pointer;
             width: 100%;
             transition: 0.3s;
-            /* Estilos de Tipografía Moderna */
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
@@ -188,9 +178,13 @@
         }
 
         .btn:hover { background: var(--accent-purple); box-shadow: 0 0 15px rgba(142, 68, 173, 0.4); }
-        .btn-main { background: linear-gradient(135deg, #8e44ad, #3498db); border: none; }
+        .btn-main { 
+            background: linear-gradient(135deg, #8e44ad, #3498db); 
+            border: none; 
+            /* AJUSTE: Un margen superior extra para nivelarlo visualmente */
+            margin-top: 5px; 
+        }
 
-        /* NOTIFICACIONES DE ACCIÓN (Action Toasts) */
         #action-container {
             position: absolute;
             bottom: 30px;
@@ -216,10 +210,7 @@
             animation: slideIn 0.4s ease forwards;
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         .spinner {
             width: 16px;
@@ -230,11 +221,8 @@
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* NOTIFICATION TOAST ANTERIOR */
         #notification-toast {
             position: absolute;
             top: 65px;
@@ -256,7 +244,7 @@
 
         #notification-toast.active { transform: translateX(0); }
         .toast-header { display: flex; align-items: center; gap: 14px; position: relative; }
-        .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(142, 68, 173, 0.3); }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid rgba(142, 68, 173, 0.3); }
         .username { color: #fff; font-weight: 600; font-size: 15px; }
         .status-tag { color: var(--accent-purple); font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .close-toast { position: absolute; top: -5px; right: -5px; color: var(--text-dim); cursor: pointer; font-size: 18px; }
@@ -267,7 +255,6 @@
 
         .footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 20px; }
         
-        /* ESTILO STATUS UPDATED */
         .status-text {
             font-size: 10px;
             font-weight: 800;
@@ -284,7 +271,6 @@
             border-radius: 12px;
             cursor: pointer;
             transition: 0.3s;
-            /* Tipografía moderna */
             font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
@@ -296,10 +282,10 @@
 </head>
 <body onmousedown="handleDrag(event)">
 
-    <div class="bg-glow"></div>
+    <div class="bg-glow reveal-3"></div>
     <div id="action-container"></div>
 
-    <div class="title-bar">
+    <div class="title-bar reveal-3">
         <div class="window-controls">
             <div class="control-btn btn-min" onclick="send('minimize')"></div>
             <div class="control-btn btn-close" onclick="send('panic')"></div>
@@ -325,18 +311,18 @@
     </div>
 
     <div class="dashboard">
-        <div class="welcome-header">
+        <div class="welcome-header reveal-1">
             <div class="welcome-section">
                 <h1>Welcome Back</h1>
                 <div class="subtitle">System integrity verified. Ready for deployment.</div>
             </div>
-            <div class="notif-bell" onclick="toggleNotif()">
+            <div class="notif-bell" onclick="toggleNotif()" style="cursor: pointer;">
                 <i data-lucide="bell" size="20"></i>
                 <div class="notif-dot"></div>
             </div>
         </div>
 
-        <div class="grid">
+        <div class="grid reveal-2">
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon"><i data-lucide="terminal"></i></div>
@@ -374,7 +360,7 @@
             </div>
         </div>
 
-        <div class="footer">
+        <div class="footer reveal-2" style="margin-top: 30px;">
             <div class="status-text">
                 Status: <span style="color: #2ecc71;">Updated</span>
             </div>
@@ -393,7 +379,6 @@
             }
         }
 
-        // Nueva función de acción para notificaciones de progreso
         function action(label, cmd) {
             const container = document.getElementById('action-container');
             const toast = document.createElement('div');
@@ -413,7 +398,7 @@
         setTimeout(() => {
             const toast = document.getElementById('notification-toast');
             if(!toast.classList.contains('active')) toggleNotif();
-        }, 2000);
+        }, 2500);
 
         function handleDrag(e) {
             if (e.target.tagName !== 'BUTTON' && !e.target.closest('.notif-bell') && !e.target.closest('#notification-toast') && !e.target.classList.contains('control-btn')) {
