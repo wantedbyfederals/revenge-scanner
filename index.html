@@ -1,179 +1,185 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DS4 Firmware Utility</title>
+    <title>DS4 Advanced Utility</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+        :root {
+            --bg-color: #08080a;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --accent-purple: #8e44ad;
+            --accent-blue: #3498db;
+            --text-main: #e0e0e0;
+            --text-dim: #808080;
         }
 
         body {
-            background-color: #050505; /* Fondo negro profundo */
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            color: white;
         }
 
-        /* Contenedor principal estilo Ocean */
-        .container {
-            width: 550px;
-            background: #0d0d0d;
-            border: 1px solid #1a1a1a;
-            border-radius: 12px;
+        .dashboard {
+            width: 850px;
             padding: 40px;
-            box-shadow: 0 0 50px rgba(0, 102, 255, 0.15); /* Resplandor azul sutil */
-            text-align: center;
         }
 
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            text-align: left;
-        }
-
-        .icon-box {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #0066ff, #0033aa);
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .icon-box svg {
-            width: 30px;
-            fill: white;
+        .welcome-section {
+            margin-bottom: 40px;
         }
 
         h1 {
-            font-size: 22px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0;
         }
 
         .subtitle {
-            color: #666;
+            color: var(--text-dim);
             font-size: 14px;
+            margin-top: 5px;
         }
 
-        .status-main {
-            font-size: 28px;
-            font-weight: 500;
-            margin: 30px 0 20px 0;
-            color: #eeeeee;
+        /* Grid de tarjetas */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
         }
 
-        /* Barra de progreso con Glow */
-        .progress-track {
-            width: 100%;
-            height: 8px;
-            background: #1a1a1a;
-            border-radius: 10px;
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
-            margin-bottom: 25px;
         }
 
-        .progress-fill {
-            width: 45%; 
-            height: 100%;
-            background: linear-gradient(90deg, #0066ff, #00d4ff);
-            box-shadow: 0 0 15px rgba(0, 102, 255, 0.5);
-            border-radius: 10px;
-            transition: width 0.5s ease;
+        .card:hover {
+            border-color: rgba(142, 68, 173, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
         }
 
-        .details {
-            color: #555;
-            font-size: 13px;
-            margin-bottom: 35px;
-        }
-
-        /* Botones estilo moderno */
-        .button-group {
+        .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 10px;
         }
 
-        button {
-            background: #121212;
-            color: #aaa;
-            border: 1px solid #222;
-            padding: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
+        .card-desc {
+            color: var(--text-dim);
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 20px;
         }
 
-        button:hover {
-            border-color: #0066ff;
+        /* Botones estilo Hywave */
+        .btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
             color: white;
-            background: #161616;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+            font-weight: 500;
         }
 
-        .btn-panic {
-            border-color: #331111;
-            margin-top: 10px;
+        .btn:hover {
+            background: var(--accent-purple);
         }
 
-        .btn-panic:hover {
-            border-color: #ff4444;
-            color: #ff4444;
+        .btn-main {
+            background: linear-gradient(135deg, #8e44ad, #2980b9);
+        }
+
+        .panic-zone {
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panic-btn {
+            background: rgba(255, 71, 71, 0.1);
+            color: #ff4747;
+            border: 1px solid rgba(255, 71, 71, 0.2);
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .panic-btn:hover {
+            background: #ff4747;
+            color: white;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <div class="icon-box">
-                <svg viewBox="0 0 24 24"><path d="M21,6H3C1.9,6,1,6.9,1,8v8c0,1.1,0.9,2,2,2h18c1.1,0,2-0.9,2-2V8C23,6.9,22.1,6,21,6z M6,15H4v-2h2V15z M17,13h-2v2h-2v-2h-2v-2h2V9h2v2h2V13z"/></svg>
-            </div>
-            <div>
-                <h1>DS4Windows</h1>
-                <div class="subtitle">Firmware Update Utility</div>
-            </div>
+<div class="dashboard">
+    <div class="welcome-section">
+        <h1>Welcome Back, Developer</h1>
+        <div class="subtitle">Select a module to manage system integrity and traces.</div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <div class="card-title">🚀 Environment</div>
+            <div class="card-desc">Initialize system policies and configure secure runtime parameters.</div>
+            <button class="btn btn-main" onclick="send('init_env')">Initialize</button>
         </div>
 
-        <div class="status-main" id="status-text">Searching for Controller...</div>
-
-        <div class="progress-track">
-            <div class="progress-fill" id="progress-bar"></div>
+        <div class="card">
+            <div class="card-title">🛡️ Trace Cleaner</div>
+            <div class="card-desc">Deep scan for metadata traces and VLC history on all drives.</div>
+            <button class="btn" onclick="send('clean_traces')">Clean Traces</button>
         </div>
 
-        <div class="details">Checking hardware revision: v3.5.0.12</div>
+        <div class="card">
+            <div class="card-title">🔑 Registry</div>
+            <div class="card-desc">Purge shellbags, userassist, and specific cheat-related registry keys.</div>
+            <button class="btn" onclick="send('clean_reg')">Purge Registry</button>
+        </div>
 
-        <div class="button-group">
-            <button onclick="sendCommand('init_env')">Initialize System</button>
-            <button onclick="sendCommand('clean_traces')">Destroy Cheat Traces</button>
-            <button onclick="sendCommand('panic')" class="btn-panic">Panic / Self-Destruct</button>
+        <div class="card">
+            <div class="card-title">🧠 RAM Sanitize</div>
+            <div class="card-desc">Wipe specific strings from system processes memory in real-time.</div>
+            <button class="btn" onclick="send('sanitize_ram')">Sanitize Memory</button>
         </div>
     </div>
 
-    <script>
-        function sendCommand(cmd) {
-            if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage(cmd);
-            }
-        }
+    <div class="panic-zone">
+        <div class="subtitle">Session status: <span style="color: #2ecc71;">Protected</span></div>
+        <button class="panic-btn" onclick="send('panic')">Terminate & Self-Destruct</button>
+    </div>
+</div>
 
-        // Función para actualizar la UI desde C++
-        function updateUI(text, percent) {
-            document.getElementById('status-text').innerText = text;
-            document.getElementById('progress-bar').style.width = percent + '%';
+<script>
+    function send(cmd) {
+        if (window.chrome && window.chrome.webview) {
+            window.chrome.webview.postMessage(cmd);
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
