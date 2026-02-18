@@ -14,21 +14,64 @@
             --text-dim: #808080;
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* Evita que se seleccione texto al arrastrar */
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
             font-family: 'Inter', 'Segoe UI', sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Barra de control superior */
+        .title-bar {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 15px;
+            background: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            cursor: pointer;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+        .btn-min { background: #f1c40f; }
+        .btn-min:hover { background: #d4ac0d; box-shadow: 0 0 8px #f1c40f; }
+
+        .btn-close { background: #e74c3c; }
+        .btn-close:hover { background: #c0392b; box-shadow: 0 0 8px #e74c3c; }
+
+        /* Contenido Principal */
         .dashboard {
-            width: 850px;
-            padding: 40px;
+            flex: 1;
+            padding: 60px 50px 40px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .welcome-section {
@@ -36,9 +79,9 @@
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 500;
-            margin: 0;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
@@ -47,7 +90,6 @@
             margin-top: 5px;
         }
 
-        /* Grid de tarjetas */
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -60,14 +102,11 @@
             border-radius: 16px;
             padding: 24px;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .card:hover {
-            border-color: rgba(142, 68, 173, 0.4);
+            border-color: rgba(142, 68, 173, 0.3);
             background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-2px);
         }
 
         .card-title {
@@ -84,47 +123,42 @@
             font-size: 13px;
             line-height: 1.5;
             margin-bottom: 20px;
+            min-height: 40px;
         }
 
-        /* Botones estilo Hywave */
         .btn {
             background: rgba(255, 255, 255, 0.08);
             border: none;
             color: white;
-            padding: 10px 18px;
+            padding: 10px;
             border-radius: 8px;
             font-size: 13px;
             cursor: pointer;
-            transition: 0.2s;
             width: 100%;
             font-weight: 500;
+            transition: 0.2s;
         }
 
-        .btn:hover {
-            background: var(--accent-purple);
-        }
+        .btn:hover { background: var(--accent-purple); }
+        .btn-main { background: linear-gradient(135deg, #8e44ad, #2980b9); }
 
-        .btn-main {
-            background: linear-gradient(135deg, #8e44ad, #2980b9);
-        }
-
-        .panic-zone {
-            margin-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 20px;
+        .footer {
+            margin-top: auto;
+            padding-top: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .panic-btn {
-            background: rgba(255, 71, 71, 0.1);
+            background: rgba(255, 71, 71, 0.05);
             color: #ff4747;
-            border: 1px solid rgba(255, 71, 71, 0.2);
+            border: 1px solid rgba(255, 71, 71, 0.15);
             padding: 8px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
+            transition: 0.3s;
         }
 
         .panic-btn:hover {
@@ -133,53 +167,66 @@
         }
     </style>
 </head>
-<body>
+<body onmousedown="handleDrag(event)">
 
-<div class="dashboard">
-    <div class="welcome-section">
-        <h1>Welcome Back, Developer</h1>
-        <div class="subtitle">Select a module to manage system integrity and traces.</div>
-    </div>
-
-    <div class="grid">
-        <div class="card">
-            <div class="card-title">🚀 Environment</div>
-            <div class="card-desc">Initialize system policies and configure secure runtime parameters.</div>
-            <button class="btn btn-main" onclick="send('init_env')">Initialize</button>
-        </div>
-
-        <div class="card">
-            <div class="card-title">🛡️ Trace Cleaner</div>
-            <div class="card-desc">Deep scan for metadata traces and VLC history on all drives.</div>
-            <button class="btn" onclick="send('clean_traces')">Clean Traces</button>
-        </div>
-
-        <div class="card">
-            <div class="card-title">🔑 Registry</div>
-            <div class="card-desc">Purge shellbags, userassist, and specific cheat-related registry keys.</div>
-            <button class="btn" onclick="send('clean_reg')">Purge Registry</button>
-        </div>
-
-        <div class="card">
-            <div class="card-title">🧠 RAM Sanitize</div>
-            <div class="card-desc">Wipe specific strings from system processes memory in real-time.</div>
-            <button class="btn" onclick="send('sanitize_ram')">Sanitize Memory</button>
+    <div class="title-bar">
+        <div class="window-controls">
+            <div class="control-btn btn-min" onclick="send('minimize')"></div>
+            <div class="control-btn btn-close" onclick="send('panic')"></div>
         </div>
     </div>
 
-    <div class="panic-zone">
-        <div class="subtitle">Session status: <span style="color: #2ecc71;">Protected</span></div>
-        <button class="panic-btn" onclick="send('panic')">Terminate & Self-Destruct</button>
-    </div>
-</div>
+    <div class="dashboard">
+        <div class="welcome-section">
+            <h1>Welcome Back, Developer</h1>
+            <div class="subtitle">Managing system integrity and trace encryption.</div>
+        </div>
 
-<script>
-    function send(cmd) {
-        if (window.chrome && window.chrome.webview) {
-            window.chrome.webview.postMessage(cmd);
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">🚀 Environment</div>
+                <div class="card-desc">Initialize secure runtime and system policies.</div>
+                <button class="btn btn-main" onclick="send('init_env')">Initialize</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🛡️ Trace Cleaner</div>
+                <div class="card-desc">Deep scan and removal of VLC and drive metadata.</div>
+                <button class="btn" onclick="send('clean_traces')">Clean Traces</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🔑 Registry</div>
+                <div class="card-desc">Purge shellbags and specific cheat registry keys.</div>
+                <button class="btn" onclick="send('clean_reg')">Purge Registry</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🧠 RAM Sanitize</div>
+                <div class="card-desc">Wipe specific strings from system memory.</div>
+                <button class="btn" onclick="send('sanitize_ram')">Sanitize Memory</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="subtitle">Session: <span style="color: #2ecc71;">Protected</span></div>
+            <button class="panic-btn" onclick="send('panic')">Terminate & Self-Destruct</button>
+        </div>
+    </div>
+
+    <script>
+        function handleDrag(e) {
+            // Solo arrastra si no estamos haciendo clic en un botón o tarjeta interactiva
+            if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('control-btn')) {
+                send('drag_window');
+            }
         }
-    }
-</script>
 
+        function send(cmd) {
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage(cmd);
+            }
+        }
+    </script>
 </body>
 </html>
