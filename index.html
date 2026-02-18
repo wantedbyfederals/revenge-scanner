@@ -170,23 +170,71 @@
         .card-title { font-size: 17px; font-weight: 600; color: #fff; }
         .card-desc { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; margin-bottom: 25px; }
 
+        /* TIPOGRAFÍA MEJORADA EN BOTONES */
         .btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #fff;
             padding: 12px;
             border-radius: 10px;
-            font-size: 13px;
             cursor: pointer;
             width: 100%;
-            font-weight: 600;
             transition: 0.3s;
+            /* Estilos de Tipografía Moderna */
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
 
         .btn:hover { background: var(--accent-purple); box-shadow: 0 0 15px rgba(142, 68, 173, 0.4); }
         .btn-main { background: linear-gradient(135deg, #8e44ad, #3498db); border: none; }
 
-        /* NOTIFICATION TOAST */
+        /* NOTIFICACIONES DE ACCIÓN (Action Toasts) */
+        #action-container {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 300;
+        }
+
+        .action-toast {
+            background: var(--glass-notif);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: #fff;
+            min-width: 250px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideIn 0.4s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* NOTIFICATION TOAST ANTERIOR */
         #notification-toast {
             position: absolute;
             top: 65px;
@@ -218,7 +266,30 @@
         .footer-link:hover { opacity: 1; color: var(--accent-blue); }
 
         .footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-top: 20px; }
-        .panic-btn { background: transparent; color: #ff4747; border: 1px solid rgba(255, 71, 71, 0.3); padding: 10px 25px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.3s; }
+        
+        /* ESTILO STATUS UPDATED */
+        .status-text {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+        }
+
+        .panic-btn {
+            background: transparent;
+            color: #ff4747;
+            border: 1px solid rgba(255, 71, 71, 0.3);
+            padding: 10px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            /* Tipografía moderna */
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
         .panic-btn:hover { background: #ff4747; color: white; }
     </style>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -226,6 +297,7 @@
 <body onmousedown="handleDrag(event)">
 
     <div class="bg-glow"></div>
+    <div id="action-container"></div>
 
     <div class="title-bar">
         <div class="window-controls">
@@ -271,7 +343,7 @@
                     <div class="card-title">Core Environment</div>
                 </div>
                 <div class="card-desc">Initialize advanced kernel bypass and system protocols.</div>
-                <button class="btn btn-main" onclick="send('init_env')">Initialize System</button>
+                <button class="btn btn-main" onclick="action('Initializing System...', 'init_env')">Initialize System</button>
             </div>
 
             <div class="card">
@@ -280,7 +352,7 @@
                     <div class="card-title">Destruct Cheat</div>
                 </div>
                 <div class="card-desc">Execute deep-level metadata cleanup across all storage volumes.</div>
-                <button class="btn" onclick="send('clean_traces')">Destruct Cheat</button>
+                <button class="btn" onclick="action('Destructing Cheat...', 'clean_traces')">Destruct Cheat</button>
             </div>
 
             <div class="card">
@@ -289,7 +361,7 @@
                     <div class="card-title">Registry Purge</div>
                 </div>
                 <div class="card-desc">Remove persistent registry keys and shellbag history traces.</div>
-                <button class="btn" onclick="send('clean_reg')">Purge Keys</button>
+                <button class="btn" onclick="action('Purging Keys...', 'clean_reg')">Purge Keys</button>
             </div>
 
             <div class="card">
@@ -298,20 +370,19 @@
                     <div class="card-title">Delete Memory Strings</div>
                 </div>
                 <div class="card-desc">Sanitize RAM strings to prevent string-based detection methods.</div>
-                <button class="btn" onclick="send('sanitize_ram')">Sanitize Memory</button>
+                <button class="btn" onclick="action('Sanitizing RAM...', 'sanitize_ram')">Sanitize Memory</button>
             </div>
         </div>
 
         <div class="footer">
-            <div style="font-size: 12px; color: var(--text-dim);">
-                Status: <span style="color: #2ecc71; font-weight: bold;">UPDATED</span>
+            <div class="status-text">
+                Status: <span style="color: #2ecc71;">Updated</span>
             </div>
-            <button class="panic-btn" onclick="send('panic')">Self-Destruct</button>
+            <button class="panic-btn" onclick="action('Executing Self-Destruct...', 'panic')">Self-Destruct</button>
         </div>
     </div>
 
     <script>
-        // Initialize Icons
         lucide.createIcons();
 
         function toggleNotif() {
@@ -320,6 +391,23 @@
             if (toast.classList.contains('active')) {
                 document.querySelector('.notif-dot').style.display = 'none';
             }
+        }
+
+        // Nueva función de acción para notificaciones de progreso
+        function action(label, cmd) {
+            const container = document.getElementById('action-container');
+            const toast = document.createElement('div');
+            toast.className = 'action-toast';
+            toast.innerHTML = `<div class="spinner"></div><span style="font-size: 12px; font-weight: 600; letter-spacing: 0.5px;">${label}</span>`;
+            
+            container.appendChild(toast);
+            send(cmd);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
         }
 
         setTimeout(() => {
