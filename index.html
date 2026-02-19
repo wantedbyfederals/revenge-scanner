@@ -13,6 +13,7 @@
             --text-main: #e0e0e0;
             --text-dim: #707075;
             --glass-notif: rgba(15, 15, 20, 0.8);
+            --status-green: #2ecc71;
         }
 
         * {
@@ -33,7 +34,6 @@
             position: relative;
         }
 
-        /* ANIMACIÓN DE ENTRADA MEJORADA */
         @keyframes revealEntry {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -95,8 +95,7 @@
 
         .dashboard {
             flex: 1;
-            /* AJUSTE: Reducimos el padding superior para subir todo el contenido */
-            padding: 60px 60px 80px 60px; 
+            padding: 60px 60px 20px 60px; 
             display: flex;
             flex-direction: column;
             z-index: 1;
@@ -106,7 +105,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* AJUSTE: Espacio un poco más compacto arriba */
             margin-bottom: 35px;
         }
 
@@ -201,7 +199,6 @@
         .btn-main { 
             background: linear-gradient(135deg, #8e44ad, #3498db); 
             border: none; 
-            /* AJUSTE: Nivelado según tus especificaciones */
             margin-top: 10px; 
         }
 
@@ -276,13 +273,13 @@
         .footer-link { color: #fff; font-weight: 600; font-size: 12px; text-decoration: none; cursor: pointer; opacity: 0.7; }
         .footer-link:hover { opacity: 1; color: var(--accent-blue); }
 
-        /* AJUSTE: El footer se mantiene abajo con aire suficiente */
+        /* AJUSTE: Pie de página bajado para más espacio */
         .footer { 
             margin-top: auto; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding-bottom: 25px; 
+            padding-bottom: 15px; 
         }
         
         .status-text {
@@ -291,6 +288,12 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             color: var(--text-dim);
+        }
+
+        /* EFECTO GLOW PARA UPDATED */
+        .updated-glow {
+            color: var(--status-green);
+            text-shadow: 0 0 8px rgba(46, 204, 113, 0.6);
         }
 
         .panic-btn {
@@ -392,9 +395,9 @@
 
         <div class="footer animate-in" style="animation-delay: 0.2s;">
             <div class="status-text">
-                Status: <span style="color: #2ecc71;">Updated</span>
+                Status: <span class="updated-glow">Updated</span>
             </div>
-            <button class="panic-btn" onclick="action('Executing Self-Destruct...', 'panic')">Self-Destruct</button>
+            <button class="panic-btn" onclick="action('Executing Destruct...', 'panic')">Destruct</button>
         </div>
     </div>
 
