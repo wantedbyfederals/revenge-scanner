@@ -171,10 +171,10 @@
             container.innerHTML = filtered.map(f => `
                 <div class="finding-entry">
                     <div class="flex justify-between items-start mb-2">
-                        <h4 class="text-[11px] font-black uppercase tracking-tight text-white">${f.title}</h4>
-                        <span class="text-[8px] bg-red-600/20 text-red-500 px-1.5 py-0.5 rounded font-black uppercase border border-red-500/20">CRITICAL</span>
+                        <h4 class="text-[13px] font-black uppercase tracking-tight text-white">${f.title}</h4>
+                        <span class="text-[9px] bg-red-600/20 text-red-500 px-2 py-0.5 rounded font-black uppercase border border-red-500/20">${filter.toUpperCase()}</span>
                     </div>
-                    <p class="text-[10px] text-gray-500 font-mono italic">Service: ${f.detail.replace('Service: ', '')}</p>
+                    <p class="text-[11px] text-gray-500 font-mono">${f.detail}</p>
                 </div>`).join('');
         }
 
@@ -226,27 +226,6 @@
                                     <span class="cat-name">Suspicious</span>
                                 </div>
                                 <span class="cat-badge text-yellow-500">${counts.suspicious}</span>
-                            </div>
-                            <div class="cat-item opacity-60">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa fa-shield-virus text-cyan-400"></i>
-                                    <span class="cat-name">Antivirus Logs</span>
-                                </div>
-                                <span class="cat-badge text-cyan-400">0</span>
-                            </div>
-                            <div class="cat-item opacity-60">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa fa-file-signature text-blue-400"></i>
-                                    <span class="cat-name">Unsigned Files</span>
-                                </div>
-                                <span class="cat-badge text-blue-400">0</span>
-                            </div>
-                            <div class="cat-item opacity-60">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa fa-usb text-indigo-400"></i>
-                                    <span class="cat-name">Usb Files</span>
-                                </div>
-                                <span class="cat-badge text-indigo-400">0</span>
                             </div>
                         </div>
                     </div>
