@@ -1,449 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DS4 Advanced Utility</title>
-    <style>
-        :root {
-            --bg-color: #050507;
-            --card-bg: rgba(255, 255, 255, 0.02);
-            --accent-purple: #8e44ad;
-            --accent-blue: #3498db;
-            --text-main: #e0e0e0;
-            --text-dim: #707075;
-            --glass-notif: rgba(15, 15, 20, 0.8);
-            --status-green: #2ecc71;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        @keyframes revealEntry {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-in {
-            animation: revealEntry 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
-        .bg-glow {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(142, 68, 173, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(52, 152, 219, 0.1) 0%, transparent 40%);
-            animation: pulseGlow 30s infinite alternate ease-in-out;
-        }
-
-        @keyframes pulseGlow {
-            0% { opacity: 0.5; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.1); }
-        }
-
-        .title-bar {
-            width: 100%;
-            height: 45px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 0 20px;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 100;
-        }
-
-        .window-controls {
-            display: flex;
-            gap: 12px;
-        }
-
-        .control-btn {
-            cursor: pointer;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .btn-min { background: #f1c40f; }
-        .btn-close { background: #e74c3c; }
-
-        .dashboard {
-            flex: 1;
-            padding: 60px 60px 20px 60px; 
-            display: flex;
-            flex-direction: column;
-            z-index: 1;
-        }
-
-        .welcome-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 35px;
-        }
-
-        .notif-bell {
-            cursor: pointer;
-            position: relative;
-            padding: 10px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
-        }
-
-        .notif-bell:hover { background: rgba(255,255,255,0.08); transform: scale(1.05); }
-
-        .notif-dot {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            background: #e74c3c;
-            border-radius: 50%;
-            border: 2px solid var(--bg-color);
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 600;
-            background: linear-gradient(to right, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .subtitle { color: var(--text-dim); font-size: 14px; margin-top: 5px; }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 20px;
-            padding: 28px;
-            backdrop-filter: blur(12px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .card:hover { border-color: rgba(142, 68, 173, 0.4); background: rgba(255, 255, 255, 0.05); transform: translateY(-5px); }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .card-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            color: var(--accent-blue);
-        }
-
-        .card-title { font-size: 17px; font-weight: 600; color: #fff; }
-        .card-desc { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; margin-bottom: 25px; }
-
-        .btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .btn:hover { background: var(--accent-purple); box-shadow: 0 0 15px rgba(142, 68, 173, 0.4); }
-        
-        .btn-main { 
-            background: linear-gradient(135deg, #8e44ad, #3498db); 
-            border: none; 
-            margin-top: 10px; 
-        }
-
-        #action-container {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 300;
-        }
-
-        .action-toast {
-            background: var(--glass-notif);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px 20px;
-            border-radius: 12px;
-            color: #fff;
-            min-width: 250px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: slideIn 0.4s ease forwards;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-top-color: var(--accent-blue);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        #notification-toast {
-            position: absolute;
-            top: 65px;
-            right: 25px;
-            width: 340px;
-            background: var(--glass-notif);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 18px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            transform: translateX(450px);
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            z-index: 200;
-        }
-
-        #notification-toast.active { transform: translateX(0); }
-        .toast-header { display: flex; align-items: center; gap: 14px; position: relative; }
-        .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(142, 68, 173, 0.3); }
-        .username { color: #fff; font-weight: 600; font-size: 15px; }
-        .status-tag { color: var(--accent-purple); font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .close-toast { position: absolute; top: -5px; right: -5px; color: var(--text-dim); cursor: pointer; font-size: 18px; }
-        .toast-body { color: #bbb; font-size: 13px; line-height: 1.5; }
-        .toast-footer { display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; }
-        .footer-link { color: #fff; font-weight: 600; font-size: 12px; text-decoration: none; cursor: pointer; opacity: 0.7; }
-        .footer-link:hover { opacity: 1; color: var(--accent-blue); }
-
-        /* AJUSTE: Pie de página bajado para más espacio */
-        .footer { 
-            margin-top: auto; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding-bottom: 15px; 
-        }
-        
-        .status-text {
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-dim);
-        }
-
-        /* EFECTO GLOW PARA UPDATED */
-        .updated-glow {
-            color: var(--status-green);
-            text-shadow: 0 0 8px rgba(46, 204, 113, 0.6);
-        }
-
-        .panic-btn {
-            background: transparent;
-            color: #ff4747;
-            border: 1px solid rgba(255, 71, 71, 0.3);
-            padding: 10px 25px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-        .panic-btn:hover { background: #ff4747; color: white; }
-    </style>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Revenge Scanner | Terminal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
 </head>
-<body onmousedown="handleDrag(event)">
-
-    <div class="bg-glow"></div>
-    <div id="action-container"></div>
-
-    <div class="title-bar">
-        <div class="window-controls">
-            <div class="control-btn btn-min" onclick="send('minimize')"></div>
-            <div class="control-btn btn-close" onclick="send('panic')"></div>
-        </div>
-    </div>
-
-    <div id="notification-toast">
-        <div class="close-toast" onclick="toggleNotif()">&times;</div>
-        <div class="toast-header">
-            <img class="avatar" src="https://media.discordapp.net/attachments/1229201422093123657/1472468816649785428/20b37448802be9f43bd4b20c8ff1e6ee.jpg?ex=69974c33&is=6995fab3&hm=ecf9853954e5e6f2509bf0e46a11168fc87644ddad5ed89b84ae5fb4939672fb&=&format=webp" alt="Dev">
-            <div style="display: flex; flex-direction: column;">
-                <span class="username">@wantedbyfederals</span>
-                <span class="status-tag">Developer • Just Now</span>
+<body>
+    <div class="container">
+        <section class="login-section">
+            <div class="header">
+                <h1 class="logo"><i class="fas fa-user-secret"></i> Revenge<span>Scanner</span></h1>
             </div>
-        </div>
-        <div class="toast-body">
-            Este bypass se encuentra en desarrollo, por lo que cualquier tipo de error debe de ser reportado a mi Discord.
-        </div>
-        <div class="toast-footer">
-            <span class="footer-link" onclick="toggleNotif()">Dismiss</span>
-            <span class="footer-link" onclick="window.location.href='https://discord.gg/TU_LINK'">Discord Support</span>
-        </div>
-    </div>
 
-    <div class="dashboard">
-        <div class="welcome-header animate-in">
-            <div class="welcome-section">
-                <h1>Welcome Back</h1>
-                <div class="subtitle">System integrity verified. Ready for deployment.</div>
+            <div class="welcome-text">
+                <h2>Terminal Login</h2>
+                <p>Ingresa los parámetros para iniciar el escaneo de red.</p>
             </div>
-            <div class="notif-bell" onclick="toggleNotif()">
-                <i data-lucide="bell" size="20"></i>
-                <div class="notif-dot"></div>
-            </div>
-        </div>
 
-        <div class="grid animate-in" style="animation-delay: 0.1s;">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon"><i data-lucide="terminal"></i></div>
-                    <div class="card-title">Core Environment</div>
+            <div class="input-group">
+                <label>Target IP / Range</label>
+                <input type="text" id="target" placeholder="192.168.1.1">
+                
+                <label>Port Range</label>
+                <div class="password-wrapper">
+                    <input type="text" id="ports" placeholder="1-65535">
                 </div>
-                <div class="card-desc">Establish the permissions and rules that must be in place for the bypass to function correctly.</div>
-                <button class="btn btn-main" onclick="action('Initializing System...', 'init_env')">Initialize System</button>
+                
+                <button class="btn-primary" onclick="startScan()">
+                    <i class="fas fa-terminal"></i> INITIALIZE SCAN
+                </button>
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="color: #ff4747;"><i data-lucide="shield-alert"></i></div>
-                    <div class="card-title">Destruct Cheat</div>
-                </div>
-                <div class="card-desc">Destruct all traces of the cheat so that there is not a single record left.</div>
-                <button class="btn" onclick="action('Destructing Cheat...', 'clean_traces')">Destruct Cheat</button>
+            <p class="footer-text">Unauthorized access is restricted. <a href="#">System Logs</a></p>
+        </section>
+
+        <section class="visual-section">
+            <div class="stat-overlay">
+                <h3>400K+ Targets. 50M+ Vulnerabilities found.</h3>
+                <button class="btn-join">View Global Stats</button>
             </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="color: #f1c40f;"><i data-lucide="database"></i></div>
-                    <div class="card-title">Registry Cleaner</div>
-                </div>
-                <div class="card-desc">Delete all collected data that has been recorded by the system. </div>
-                <button class="btn" onclick="action('Purging Keys...', 'clean_reg')">Clear Registry</button>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="color: #a29bfe;"><i data-lucide="binary"></i></div>
-                    <div class="card-title">Delete Memory Strings</div>
-                </div>
-                <div class="card-desc">Removes all strings stored in the cheat and bypass processes.</div>
-                <button class="btn" onclick="action('Sanitizing RAM...', 'sanitize_ram')">Delete Memory</button>
-            </div>
-        </div>
-
-        <div class="footer animate-in" style="animation-delay: 0.2s;">
-            <div class="status-text">
-                Status: <span class="updated-glow">Updated</span>
-            </div>
-            <button class="panic-btn" onclick="action('Executing Destruct...', 'panic')">Destruct</button>
-        </div>
-    </div>
-
-    <script>
-        lucide.createIcons();
-
-        function toggleNotif() {
-            const toast = document.getElementById('notification-toast');
-            toast.classList.toggle('active');
-            if (toast.classList.contains('active')) {
-                document.querySelector('.notif-dot').style.display = 'none';
-            }
-        }
-
-        function action(label, cmd) {
-            const container = document.getElementById('action-container');
-            const toast = document.createElement('div');
-            toast.className = 'action-toast';
-            toast.innerHTML = `<div class="spinner"></div><span style="font-size: 12px; font-weight: 600; letter-spacing: 0.5px;">${label}</span>`;
             
-            container.appendChild(toast);
-            send(cmd);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(20px)';
-                setTimeout(() => toast.remove(), 400);
-            }, 3000);
-        }
-
-        setTimeout(() => {
-            const toast = document.getElementById('notification-toast');
-            if(!toast.classList.contains('active')) toggleNotif();
-        }, 2000);
-
-        function handleDrag(e) {
-            if (e.target.tagName !== 'BUTTON' && !e.target.closest('.notif-bell') && !e.target.closest('#notification-toast') && !e.target.classList.contains('control-btn')) {
-                send('drag_window');
-            }
-        }
-
-        function send(cmd) {
-            if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage(cmd);
-            }
-        }
-    </script>
+            <div class="scanner-visual">
+                <div class="cube-container">
+                    <div class="cube">
+                        <div class="face front">DEBUG</div>
+                        <div class="face back">ROOT</div>
+                        <div class="face right">SCAN</div>
+                        <div class="face left">HASH</div>
+                        <div class="face top">EXE</div>
+                        <div class="face bottom">SQL</div>
+                    </div>
+                </div>
+                <div class="scan-ring"></div>
+            </div>
+        </section>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
