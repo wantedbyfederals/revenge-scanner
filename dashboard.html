@@ -2,262 +2,431 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>REVENGE | Advanced Threat Hunter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REVENGE - ADMIN PANEL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');
-        :root { --bg-deep: #08080a; --panel-bg: #0d0d10; --accent: #ff4141; --glass-border: rgba(255, 255, 255, 0.05); }
-        body { background: var(--bg-deep); color: #e2e8f0; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; }
-        .sidebar { background: #050507; border-right: 1px solid var(--glass-border); width: 280px; }
-        .glass-card { background: var(--panel-bg); border: 1px solid var(--glass-border); border-radius: 12px; }
-        
-        .pin-card { 
-            cursor: pointer; transition: all 0.3s ease; 
-            background: linear-gradient(145deg, #121217 0%, #0a0a0c 100%); 
-            border: 1px solid var(--glass-border);
-            position: relative; overflow: hidden; border-left: 4px solid var(--accent);
-        }
-        .pin-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-
-        /* Estilo restaurado de los registros */
-        .finding-entry { 
-            background: #0f0f13; border-left: 3px solid var(--accent); 
-            border-radius: 4px; padding: 16px; margin-bottom: 12px;
-            display: flex; flex-direction: column; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        
-        .hw-label { font-family: 'JetBrains Mono', monospace; color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        .hw-value { color: #fff; font-weight: 700; font-size: 13px; margin-top: 3px; }
-        
-        /* Categorías con nombres blancos e iconos/badges de color */
-        .cat-item { 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 12px 16px; border-radius: 8px; background: rgba(255,255,255,0.02);
-            transition: all 0.2s; cursor: pointer; border: 1px solid transparent; margin-bottom: 8px;
-        }
-        .cat-item:hover { background: rgba(255,255,255,0.05); }
-        .cat-item.active { background: rgba(255,65,65,0.05); border-color: rgba(255,65,65,0.2); }
-        
-        .cat-name { color: #ffffff; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .cat-badge {
-            font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 900;
-            padding: 2px 8px; border-radius: 4px; background: rgba(0,0,0,0.4);
+        body {
+            background-color: #080808;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
 
-        .btn-action { font-weight: 900; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.2s; }
-        #auth-screen { background: radial-gradient(circle at center, #1a1010 0%, #08080a 100%); display: flex; align-items: center; justify-content: center; position: fixed; inset: 0; z-index: 9999; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #1a1a20; border-radius: 10px; }
-        .hidden { display: none !important; }
+        .sidebar {
+            width: 280px;
+            background-color: #080808;
+            border-right: 1px solid #151515;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 40px 60px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 50px;
+        }
+
+        .logo-icon {
+            background-color: #e63946;
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text h1 {
+            font-weight: 900;
+            font-style: italic;
+            font-size: 22px;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text p {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            background-color: #121212;
+            border: 1px solid #1a1a1a;
+        }
+
+        .nav-item span {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.2px;
+        }
+
+        .nav-item.inactive {
+            color: #555;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-bottom: 20px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #22c55e;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .btn-generate {
+            background-color: #ffffff;
+            color: #000000;
+            font-weight: 900;
+            font-size: 12px;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 40px;
+        }
+
+        .info-panel {
+            background-color: #0d0d0d;
+            border: 1px solid #151515;
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 30px;
+        }
+
+        .label-red {
+            color: #e63946;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .system-name {
+            font-size: 38px;
+            font-weight: 900;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        .spec-item {
+            margin-bottom: 25px;
+        }
+
+        .spec-label {
+            font-size: 9px;
+            color: #555;
+            text-transform: uppercase;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+
+        .spec-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .security-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #111111;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .security-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .security-count {
+            font-size: 12px;
+            font-weight: 800;
+            color: #444;
+        }
+
+        .count-active {
+            color: #e63946;
+            background-color: #251214;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .analysis-line {
+            height: 1px;
+            width: 40px;
+            background-color: #e63946;
+        }
+
+        .analysis-title {
+            font-size: 24px;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+
+        .finding-card {
+            background-color: #0d0d0d;
+            border: 1px solid #151515;
+            border-left: 4px solid #e63946;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .finding-info h4 {
+            font-size: 18px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .finding-info p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .finding-info span {
+            color: #aaa;
+            font-family: monospace;
+        }
+
+        .badge-critical {
+            background-color: #251214;
+            color: #e63946;
+            font-size: 10px;
+            font-weight: 900;
+            padding: 4px 12px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
-<body class="flex">
+<body>
 
-    <div id="auth-screen">
-        <div class="w-full max-w-md p-10 glass-card border-red-500/20 text-center">
-            <div class="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(255,65,65,0.3)]">
-                <i class="fa fa-shield-halved text-white text-3xl"></i>
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z"/></svg>
             </div>
-            <h2 class="text-3xl font-black italic mb-2 uppercase tracking-tighter text-white">Access Locked</h2>
-            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-10">ADMIN PANEL Verification</p>
-            <div class="space-y-4">
-                <input type="text" id="op-id" placeholder="OPERATOR ID" class="w-full bg-black/50 border border-white/10 p-4 rounded-xl text-xs font-mono focus:border-red-500 outline-none text-white">
-                <input type="password" id="op-key" placeholder="ACCESS KEY" class="w-full bg-black/50 border border-white/10 p-4 rounded-xl text-xs font-mono focus:border-red-500 outline-none text-white">
-                <input type="text" id="op-otp" placeholder="DISCORD OTP" class="w-full bg-black/50 border border-red-500/20 p-4 rounded-xl text-xs font-mono focus:border-red-500 outline-none text-red-500">
-                <div class="flex gap-2">
-                    <button onclick="requestOTP()" class="w-1/3 btn-action bg-white/5 text-gray-400 p-4 rounded-xl hover:bg-white/10 text-[9px]">Send Code</button>
-                    <button onclick="login()" class="w-2/3 btn-action bg-red-600 text-white p-4 rounded-xl hover:bg-red-500 shadow-2xl transition">Establish Connection</button>
+            <div class="logo-text">
+                <h1>REVENGE</h1>
+                <p>ADMIN PANEL</p>
+            </div>
+        </div>
+
+        <nav>
+            <div class="nav-item active">
+                <span style="color: #e63946;">⊞</span>
+                <span>SCANS DATABASE</span>
+            </div>
+            <div class="nav-item inactive">
+                <span>👥</span>
+                <span>User Management</span>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="status-dot"></div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">NETWORK ACTIVE</span>
+            </div>
+            <div class="text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-white cursor-pointer transition">
+                TERMINATE SESSION
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header-actions">
+            <div class="flex items-center gap-2 text-gray-500 font-bold text-[10px] uppercase cursor-pointer hover:text-white">
+                <span>‹</span> RETURN
+            </div>
+            <button class="btn-generate">GENERATE PIN</button>
+        </div>
+
+        <div class="data-grid">
+            <div>
+                <div class="info-panel">
+                    <span class="label-red">SYSTEM SIGNATURE</span>
+                    <h2 class="system-name">KERNELOS-PC</h2>
+
+                    <div class="spec-item">
+                        <p class="spec-label">OPERATING SYSTEM</p>
+                        <p class="spec-value">Windows 10 Pro</p>
+                    </div>
+
+                    <div class="spec-item">
+                        <p class="spec-label">PROCESSOR (CPU)</p>
+                        <p class="spec-value">Intel(R) Core(TM) i5-9400F CPU @ 2.90GHz</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="spec-item">
+                            <p class="spec-label">PHYSICAL RAM</p>
+                            <p class="spec-value">16 GB</p>
+                        </div>
+                        <div class="spec-item">
+                            <p class="spec-label">SYSTEM UPTIME</p>
+                            <p class="spec-value">6 hours</p>
+                        </div>
+                    </div>
+
+                    <div class="spec-item">
+                        <p class="spec-label">INSTALL DATE</p>
+                        <p class="spec-value" style="color: #888; letter-spacing: 1px;">1771865827</p>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-6">SECURITY CLASSIFICATIONS</p>
+                    
+                    <div class="security-row">
+                        <div class="security-label" style="color: #e63946;">☣ CRITICAL</div>
+                        <div class="security-count count-active">5</div>
+                    </div>
+
+                    <div class="security-row">
+                        <div class="security-label" style="color: #f97316;">⚠ WARNING</div>
+                        <div class="security-count">0</div>
+                    </div>
+
+                    <div class="security-row">
+                        <div class="security-label" style="color: #eab308;">👁 SUSPICIOUS</div>
+                        <div class="security-count">0</div>
+                    </div>
+
+                    <div class="security-row">
+                        <div class="security-label" style="color: #38bdf8;">🛡 ANTIVIRUS LOGS</div>
+                        <div class="security-count">0</div>
+                    </div>
+
+                    <div class="security-row">
+                        <div class="security-label" style="color: #94a3b8;">📝 UNSIGNED FILES</div>
+                        <div class="security-count">0</div>
+                    </div>
+
+                    <div class="security-row">
+                        <div class="security-label" style="color: #a78bfa;">💾 USB FILES</div>
+                        <div class="security-count">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="analysis-header">
+                    <div class="analysis-line"></div>
+                    <h3 class="analysis-title">LIVE ANALYSIS FINDINGS</h3>
+                </div>
+
+                <div class="finding-card">
+                    <div class="finding-info">
+                        <h4>CRITICAL SERVICE STOPPED</h4>
+                        <p>Service: <span>sysmain</span></p>
+                    </div>
+                    <div class="badge-critical">CRITICAL</div>
+                </div>
+
+                <div class="finding-card">
+                    <div class="finding-info">
+                        <h4>CRITICAL SERVICE STOPPED</h4>
+                        <p>Service: <span>DiagTrack</span></p>
+                    </div>
+                    <div class="badge-critical">CRITICAL</div>
+                </div>
+
+                <div class="finding-card">
+                    <div class="finding-info">
+                        <h4>CRITICAL SERVICE STOPPED</h4>
+                        <p>Service: <span>pcasvc</span></p>
+                    </div>
+                    <div class="badge-critical">CRITICAL</div>
+                </div>
+
+                <div class="finding-card">
+                    <div class="finding-info">
+                        <h4>CRITICAL SERVICE STOPPED</h4>
+                        <p>Service: <span>sgrmbroker</span></p>
+                    </div>
+                    <div class="badge-critical">CRITICAL</div>
+                </div>
+
+                <div class="finding-card">
+                    <div class="finding-info">
+                        <h4>CRITICAL SERVICE STOPPED</h4>
+                        <p>Service: <span>cdpuser</span></p>
+                    </div>
+                    <div class="badge-critical">CRITICAL</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <aside id="sidebar-ui" class="sidebar p-8 flex flex-col hidden">
-        <div class="flex items-center gap-3 mb-16">
-            <div class="w-10 h-10 bg-red-600 rounded flex items-center justify-center"><i class="fa fa-crosshairs text-white text-xl"></i></div>
-            <div>
-                <div class="font-black text-xl tracking-tighter leading-none text-white">REVENGE</div>
-                <div class="text-[9px] text-gray-500 font-bold tracking-[0.2em] uppercase">ADMIN PANEL</div>
-            </div>
-        </div>
-        <nav class="flex-1 space-y-2">
-            <button onclick="abortSession()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl bg-white/5 text-sm font-bold hover:bg-white/10 transition"><i class="fa fa-th-large text-red-500"></i> SCANS DATABASE</button>
-            <button onclick="manageUsers()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-500 text-sm font-bold hover:bg-white/10 transition"><i class="fa fa-users-cog"></i> User Management</button>
-        </nav>
-        <div class="mt-auto pt-8 border-t border-white/5">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Network Active</span>
-            </div>
-            <button onclick="logout()" class="text-[9px] font-black text-gray-600 uppercase hover:text-red-500 transition">Terminate Session</button>
-        </div>
-    </aside>
-
-    <main id="main-ui" class="flex-1 overflow-y-auto p-12 hidden">
-        <div id="view-list">
-            <div class="flex justify-between items-center mb-12">
-                <div>
-                    <h1 class="text-4xl font-black italic tracking-tight uppercase text-white">SCANS DATABASE</h1>
-                    <p class="text-gray-500 text-xs font-bold uppercase mt-2">Real-time Terminal Monitoring</p>
-                </div>
-                <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white shadow-2xl">GENERATE PIN</button>
-            </div>
-            <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-        </div>
-
-        <div id="view-detail" class="hidden">
-            <div class="flex justify-between items-center mb-10">
-                <button onclick="abortSession()" class="flex items-center gap-3 text-xs font-black uppercase text-gray-500 hover:text-white transition"><i class="fa fa-chevron-left"></i> Return</button>
-                <button onclick="deleteCurrentScan()" class="px-6 py-2 border border-red-500/20 text-red-500 rounded-lg text-xs font-black uppercase hover:bg-red-500 hover:text-white transition">Delete Scan</button>
-            </div>
-            <div id="report-content" class="grid grid-cols-12 gap-8"></div>
-        </div>
-    </main>
-
-    <script>
-        const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com", WEBHOOK = "https://discord.com/api/webhooks/1476109273569431725/IvdnhbroUp8VRnsU29xb9lDu1Oea5ba_D6573DZOuZKAYY4nodqdZGLLz69wx0KZA_py";
-        let activeOTP = null, openPin = null;
-
-        async function requestOTP() {
-            activeOTP = Math.floor(100000 + Math.random() * 900000).toString();
-            await fetch(WEBHOOK, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({embeds:[{title:"🔐 REVENGE AUTH", fields:[{name:"OTP", value:`**${activeOTP}**`}], color:16727873}]}) });
-            alert("Code sent.");
-        }
-
-        function login() {
-            if (document.getElementById('op-id').value === "admin" && document.getElementById('op-key').value === "wantedbyfederals0800!" && document.getElementById('op-otp').value === activeOTP) {
-                localStorage.setItem('auth_status', 'granted'); showMainUI();
-            } else { alert("ACCESS DENIED: INVALID CREDENTIALS"); }
-        }
-
-        function showMainUI() {
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('sidebar-ui').classList.remove('hidden');
-            document.getElementById('main-ui').classList.remove('hidden');
-            loadPins();
-        }
-
-        async function loadPins() {
-            const res = await fetch(`${DB_URL}/pins.json`), data = await res.json(), grid = document.getElementById('pins-grid'); grid.innerHTML = "";
-            for (let pin in data) {
-                grid.innerHTML += `
-                <div onclick="openReport('${pin}')" class="pin-card p-8 rounded-xl">
-                    <div class="flex justify-between items-center mb-4">
-                         <span class="text-[11px] font-bold text-red-500 font-mono tracking-[0.2em] uppercase">PIN #${pin}</span>
-                         <div class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_8px_#ff4141]"></div>
-                    </div>
-                    <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white">${data[pin].pcName || "INITIALIZING..."}</h3>
-                    <p class="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest opacity-60">${data[pin].timestamp}</p>
-                </div>`;
-            }
-        }
-
-        function renderFindings(findings, filter) {
-            const container = document.getElementById('findings-grid');
-            const filtered = (findings || []).filter(f => f.category === filter || (filter === 'Critical' && !f.category));
-            
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-24 flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-white/5 rounded-2xl">
-                        <i class="fa fa-folder-open text-6xl mb-4"></i>
-                        <span class="text-xl font-black uppercase italic tracking-[0.3em]">No records found</span>
-                    </div>`;
-                return;
-            }
-
-            container.innerHTML = filtered.map(f => `
-                <div class="finding-entry">
-                    <div class="flex justify-between items-start mb-2">
-                        <h4 class="text-[13px] font-black uppercase tracking-tight text-white">${f.title}</h4>
-                        <span class="text-[9px] bg-red-600/20 text-red-500 px-2 py-0.5 rounded font-black uppercase border border-red-500/20">${filter.toUpperCase()}</span>
-                    </div>
-                    <p class="text-[11px] text-gray-500 font-mono">${f.detail}</p>
-                </div>`).join('');
-        }
-
-        async function openReport(pin) {
-            openPin = pin; const res = await fetch(`${DB_URL}/pins/${pin}.json`), data = await res.json(), specs = data.specs || {}, findings = data.findings?.findings || [];
-            
-            const counts = {
-                critical: findings.filter(f => !f.category || f.category === 'Critical').length,
-                warning: findings.filter(f => f.category === 'Warning').length,
-                suspicious: findings.filter(f => f.category === 'Suspicious').length
-            };
-
-            document.getElementById('report-content').innerHTML = `
-                <div class="col-span-12 lg:col-span-4 space-y-6">
-                    <div class="glass-card p-8 border border-white/5">
-                        <div class="hw-label mb-4 text-red-500 font-black">SYSTEM SIGNATURE</div>
-                        <h2 class="text-3xl font-black mb-10 italic uppercase text-white tracking-tighter">${data.pcName || "UNKNOWN"}</h2>
-                        <div class="space-y-6">
-                            <div><div class="hw-label"><i class="fab fa-windows text-blue-400"></i> Operating System</div><div class="hw-value">${specs.os || "--"}</div></div>
-                            <div><div class="hw-label"><i class="fa fa-microchip text-red-400"></i> Processor (CPU)</div><div class="hw-value">${specs.cpu || "--"}</div></div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><div class="hw-label"><i class="fa fa-memory text-green-400"></i> Physical RAM</div><div class="hw-value">${specs.ram || "--"}</div></div>
-                                <div><div class="hw-label"><i class="fa fa-clock text-yellow-400"></i> System Uptime</div><div class="hw-value">${specs.boot || "--"}</div></div>
-                            </div>
-                            <div><div class="hw-label"><i class="fa fa-calendar-alt text-purple-400"></i> Install Date</div><div class="hw-value">${specs.install || "--"}</div></div>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-6 border border-white/5">
-                        <div class="hw-label mb-6 text-gray-400 font-black tracking-widest">SECURITY CLASSIFICATIONS</div>
-                        <div id="cat-list">
-                            <div onclick="renderFindings(JSON.parse('${JSON.stringify(findings).replace(/'/g, "\\'")}'), 'Critical')" class="cat-item active">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa fa-biohazard text-red-500"></i>
-                                    <span class="cat-name">Critical</span>
-                                </div>
-                                <span class="cat-badge text-red-500">${counts.critical}</span>
-                            </div>
-                            <div onclick="renderFindings(JSON.parse('${JSON.stringify(findings).replace(/'/g, "\\'")}'), 'Warning')" class="cat-item">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa fa-triangle-exclamation text-orange-500"></i>
-                                    <span class="cat-name">Warning</span>
-                                </div>
-                                <span class="cat-badge text-orange-500">${counts.warning}</span>
-                            </div>
-                            <div onclick="renderFindings(JSON.parse('${JSON.stringify(findings).replace(/'/g, "\\'")}'), 'Suspicious')" class="cat-item">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa fa-eye text-yellow-500"></i>
-                                    <span class="cat-name">Suspicious</span>
-                                </div>
-                                <span class="cat-badge text-yellow-500">${counts.suspicious}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-span-12 lg:col-span-8">
-                    <h3 class="text-xl font-black uppercase italic mb-8 flex items-center gap-3 text-white"><span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings</h3>
-                    <div id="findings-grid" class="flex flex-col"></div>
-                </div>`;
-            
-            renderFindings(findings, 'Critical');
-            document.getElementById('view-list').classList.add('hidden');
-            document.getElementById('view-detail').classList.remove('hidden');
-
-            const items = document.querySelectorAll('.cat-item');
-            items.forEach(item => {
-                item.addEventListener('click', () => {
-                    items.forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                });
-            });
-        }
-
-        async function deleteCurrentScan() { if(confirm('DELETE RECORD?')) { await fetch(`${DB_URL}/pins/${openPin}.json`, { method: 'DELETE' }); abortSession(); loadPins(); } }
-        function abortSession() { document.getElementById('view-list').classList.remove('hidden'); document.getElementById('view-detail').classList.add('hidden'); }
-        function logout() { localStorage.removeItem('auth_status'); location.reload(); }
-        async function generatePIN() {
-            const pin = Math.floor(100000 + Math.random() * 900000).toString();
-            await fetch(`${DB_URL}/pins/${pin}.json`, { method: 'PUT', body: JSON.stringify({ staff: "admin", timestamp: new Date().toLocaleString(), pcName: "INITIALIZING..." }) });
-            loadPins();
-        }
-        window.onload = () => { if(localStorage.getItem('auth_status') === 'granted') showMainUI(); };
-    </script>
 </body>
 </html>
