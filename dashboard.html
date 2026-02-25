@@ -100,7 +100,6 @@
             transition: all 0.2s;
         }
 
-        /* Estilos nuevos para el Login */
         #auth-screen {
             background: radial-gradient(circle at center, #1a1010 0%, #08080a 100%);
             display: flex;
@@ -170,7 +169,6 @@
     </aside>
 
     <main id="main-ui" class="flex-1 overflow-y-auto p-12 hidden">
-        
         <div id="view-list">
             <div class="flex justify-between items-center mb-12">
                 <div>
@@ -181,9 +179,7 @@
                     GENERATE PIN
                 </button>
             </div>
-            
-            <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                </div>
+            <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </div>
 
         <div id="view-detail" class="hidden">
@@ -195,13 +191,11 @@
                     <button id="btn-delete" class="px-6 py-2 border border-red-500/20 text-red-500 rounded-lg text-xs font-black uppercase hover:bg-red-500 hover:text-white transition">Delete Scan</button>
                 </div>
             </div>
-
             <div class="grid grid-cols-12 gap-8">
                 <div class="col-span-12 lg:col-span-4 space-y-6">
                     <div class="glass-card p-8">
                         <div class="text-[10px] font-black text-red-500 uppercase tracking-[0.2em] mb-4">Hardware Signature</div>
                         <h2 id="detail-pcname" class="text-3xl font-black mb-8 italic">--</h2>
-                        
                         <div class="space-y-6">
                             <div><div class="hw-label mb-1">Operating System</div><div id="hw-os" class="hw-value">--</div></div>
                             <div><div class="hw-label mb-1">Central Processor</div><div id="hw-cpu" class="hw-value">--</div></div>
@@ -212,18 +206,15 @@
                             <div><div class="hw-label mb-1">System Install Date</div><div id="hw-install" class="hw-value">--</div></div>
                         </div>
                     </div>
-
                     <div class="glass-card p-8">
                         <div class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">Analysis Stats</div>
                         <div id="cat-list" class="space-y-3"></div>
                     </div>
                 </div>
-
                 <div class="col-span-12 lg:col-span-8">
                     <div class="flex items-center justify-between mb-8">
                         <h3 class="text-xl font-black uppercase italic tracking-widest flex items-center gap-3">
-                            <span class="w-8 h-[2px] bg-red-600"></span>
-                            Live Findings
+                            <span class="w-8 h-[2px] bg-red-600"></span> Live Findings
                         </h3>
                     </div>
                     <div id="findings-grid"></div>
@@ -236,16 +227,15 @@
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
 
-        // --- SISTEMA DE AUTENTICACIÓN CORREGIDO ---
         async function login() {
             const user = document.getElementById('op-id').value;
             const key = document.getElementById('op-key').value;
 
+            if(!user || !key) { alert("Please enter credentials."); return; }
+
             try {
-                // Fetch optimizado para Realtime Database
-                const resp = await fetch(`${DB_URL}/operators/${user}.json`, {
-                    method: 'GET'
-                });
+                // CORRECCIÓN: Usamos .json para que Firebase responda correctamente
+                const resp = await fetch(`${DB_URL}/operators/${user}.json`);
                 const data = await resp.json();
 
                 if (data && data.key === key) {
@@ -254,9 +244,9 @@
                 } else {
                     alert("ACCESS DENIED: Critical authentication failure.");
                 }
-            } catch (error) {
-                console.error("Connection Error:", error);
-                alert("DATABASE ERROR: Could not connect to SCANS DATABASE.");
+            } catch (err) {
+                console.error(err);
+                alert("NETWORK ERROR: Check your SCANS DATABASE connection.");
             }
         }
 
@@ -272,18 +262,11 @@
             handleRouting();
         }
 
-        // --- SISTEMA DE RUTAS ---
-        function navigateToPin(pin) {
-            window.location.hash = `/pin/${pin}`;
-        }
-
-        function abortSession() {
-            window.location.hash = '';
-        }
+        function navigateToPin(pin) { window.location.hash = `/pin/${pin}`; }
+        function abortSession() { window.location.hash = ''; }
 
         async function handleRouting() {
             if (!localStorage.getItem('revenge_auth')) return;
-            
             const hash = window.location.hash;
             if (hash.startsWith('#/pin/')) {
                 const pin = hash.split('/')[2];
@@ -301,7 +284,6 @@
             }
         });
 
-        // --- FUNCIONES CORE ---
         function showView(v) {
             document.getElementById('view-list').classList.toggle('hidden', v !== 'list');
             document.getElementById('view-detail').classList.toggle('hidden', v !== 'detail');
