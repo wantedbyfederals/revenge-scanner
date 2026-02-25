@@ -6,167 +6,121 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #020204; color: #f3f4f6; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(10, 10, 15, 0.95); border: 1px solid rgba(255, 255, 255, 0.03); }
-        
-        .category-group { margin-bottom: 40px; }
-        .category-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; }
-
-        .log-card { 
-            background: #08080a; 
-            border: 1px solid rgba(255,255,255,0.03);
-            border-left: 3px solid transparent;
-            position: relative;
-            overflow: hidden;
-            transition: 0.3s;
+        body { background-color: #020204; color: #f3f4f6; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .glass { background: rgba(10, 10, 15, 0.98); border: 1px solid rgba(255, 255, 255, 0.03); }
+        .card-log { 
+            background: #08080a; border: 1px solid rgba(255,255,255,0.03); border-left: 3px solid #ef4444;
+            transition: 0.2s;
         }
-        .log-card:hover { background: #0c0c0e; transform: translateX(5px); }
-
-        /* Colores Dinámicos */
-        .border-critical { border-left-color: #ef4444; box-shadow: inset 20px 0 30px -20px rgba(239, 68, 68, 0.1); }
-        .border-suspicious { border-left-color: #3b82f6; box-shadow: inset 20px 0 30px -20px rgba(59, 130, 246, 0.1); }
-        .border-warning { border-left-color: #f59e0b; box-shadow: inset 20px 0 30px -20px rgba(245, 158, 11, 0.1); }
-        .border-integrity { border-left-color: #10b981; box-shadow: inset 20px 0 30px -20px rgba(16, 185, 129, 0.1); }
-
-        .badge { font-size: 9px; padding: 2px 8px; border-radius: 4px; font-weight: 900; }
-        .badge-critical { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .card-log:hover { background: #0c0c0e; }
+        .badge-instance { background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 9px; padding: 2px 8px; border-radius: 4px; font-weight: 800; }
     </style>
 </head>
 <body class="flex h-screen">
 
-    <aside class="w-64 border-r border-white/5 p-6 flex flex-col space-y-6">
-        <div class="text-2xl font-black text-purple-500 italic mb-10">REVENGE</div>
-        <button onclick="showView('list')" class="flex items-center space-x-3 p-3 text-gray-400 hover:text-white transition"><i class="fa fa-th-large"></i> <span>Dashboard</span></button>
-        <button class="flex items-center space-x-3 p-3 text-gray-400"><i class="fa fa-history"></i> <span>Recent Pins</span></button>
+    <aside class="w-64 border-r border-white/5 p-6 flex flex-col justify-between">
+        <div>
+            <div class="text-2xl font-black text-purple-500 italic mb-10">REVENGE</div>
+            <nav class="space-y-2">
+                <button onclick="showView('list')" class="w-full flex items-center space-x-3 p-3 text-gray-400 hover:bg-white/5 rounded-xl transition">
+                    <i class="fa fa-list"></i> <span>Recent Scans</span>
+                </button>
+            </nav>
+        </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto p-12">
+    <main class="flex-1 p-10 overflow-y-auto">
         <div id="view-list">
-            <div class="flex justify-between items-end mb-12">
-                <div><h1 class="text-4xl font-black">Scan Logs</h1><p class="text-gray-500 font-mono text-xs mt-2">v1.2.0-STABLE | Systems Online</p></div>
-                <button onclick="generatePIN()" class="bg-white text-black px-6 py-3 rounded-xl font-black text-xs uppercase hover:bg-purple-500 hover:text-white transition">Create Session</button>
+            <div class="flex justify-between items-center mb-10">
+                <h1 class="text-3xl font-bold">Detection Logs</h1>
+                <button onclick="generatePIN()" class="bg-purple-600 px-6 py-2 rounded-lg font-bold">New Session</button>
             </div>
             <div id="pins-grid" class="grid grid-cols-3 gap-6"></div>
         </div>
 
         <div id="view-detail" class="hidden">
-            <button onclick="showView('list')" class="text-gray-600 hover:text-white mb-8 transition flex items-center gap-2 font-bold text-xs uppercase"><i class="fa fa-chevron-left"></i> Return</button>
-            
-            <div class="grid grid-cols-12 gap-8">
+            <div class="flex justify-between items-start mb-8">
+                <button onclick="showView('list')" class="text-gray-500 hover:text-white"><i class="fa fa-arrow-left mr-2"></i> Back</button>
+                <button id="delete-btn" class="bg-red-900/20 text-red-500 border border-red-500/20 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-500 hover:text-white transition">
+                    <i class="fa fa-trash-alt mr-2"></i> DELETE SCAN DATA
+                </button>
+            </div>
+
+            <div class="grid grid-cols-12 gap-6">
                 <div class="col-span-3">
-                    <div class="glass p-6 rounded-3xl sticky top-0">
-                        <h2 class="text-xs font-black text-gray-500 uppercase mb-6 tracking-widest text-center">Summary</h2>
-                        <div id="summary-list" class="space-y-2"></div>
-                    </div>
+                    <div class="glass p-6 rounded-2xl space-y-4" id="stat-summary"></div>
                 </div>
 
-                <div class="col-span-9 space-y-12" id="categories-container">
-                    </div>
+                <div class="col-span-9">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                        <i class="fa fa-bug text-red-500"></i> Detection Records
+                    </h2>
+                    <div id="detections-grid" class="grid grid-cols-2 gap-4">
+                        </div>
+                </div>
             </div>
         </div>
     </main>
 
     <script>
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com/pins";
+        let activePin = null;
 
         function showView(v) {
             document.getElementById('view-list').classList.toggle('hidden', v !== 'list');
             document.getElementById('view-detail').classList.toggle('hidden', v !== 'detail');
         }
 
+        async function deleteScan() {
+            if(!activePin || !confirm("¿Eliminar este registro permanentemente?")) return;
+            await fetch(`${DB_URL}/${activePin}.json`, { method: 'DELETE' });
+            activePin = null;
+            showView('list');
+            loadLogs();
+        }
+
+        document.getElementById('delete-btn').onclick = deleteScan;
+
         async function openReport(pin) {
+            activePin = pin;
             const resp = await fetch(`${DB_URL}/${pin}.json`);
             const data = await resp.json();
             const findings = data.findings?.findings || [];
 
-            // Agrupar por categoría para que no se mezclen
-            const groups = findings.reduce((acc, f) => {
-                acc[f.category] = acc[f.category] || [];
-                acc[f.category].push(f);
-                return acc;
-            }, {});
-
-            const container = document.getElementById('categories-container');
-            const summary = document.getElementById('summary-list');
-            container.innerHTML = "";
-            summary.innerHTML = "";
-
-            const cats = ["Critical", "Integrity", "Warning", "Suspicious"];
-            const colors = { Critical: "ef4444", Integrity: "10b981", Warning: "f59e0b", Suspicious: "3b82f6" };
-
-            cats.forEach(cat => {
-                const items = groups[cat] || [];
-                const color = colors[cat];
-
-                // Panel lateral
-                summary.innerHTML += `
-                    <div class="flex justify-between items-center p-4 rounded-2xl ${items.length > 0 ? 'bg-white/5' : 'opacity-20'}">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase">${cat}</span>
-                        <span class="font-black text-xs" style="color: #${color}">${items.length}</span>
+            const grid = document.getElementById('detections-grid');
+            grid.innerHTML = findings.map(f => `
+                <div class="card-log p-6 rounded-xl">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fa fa-exclamation-triangle text-red-500"></i>
+                        <span class="badge-instance uppercase">Boot instance</span>
                     </div>
-                `;
-
-                if (items.length > 0) {
-                    let html = `
-                        <div class="category-group">
-                            <div class="category-header" style="color: #${color}"><i class="fa fa-folder-open"></i> ${cat} Detections</div>
-                            <div class="grid grid-cols-1 gap-3">
-                    `;
-                    
-                    items.forEach(f => {
-                        html += `
-                            <div class="log-card p-6 rounded-2xl border-${cat.toLowerCase()}">
-                                <div class="flex justify-between items-center mb-4">
-                                    <div class="badge badge-critical uppercase tracking-tighter">Instance: Boot</div>
-                                    <span class="text-[9px] font-mono text-gray-600">ID: #${Math.floor(Math.random()*9000)}</span>
-                                </div>
-                                <h3 class="text-sm font-bold mb-2">${f.title}</h3>
-                                <div class="bg-black/40 p-3 rounded-lg border border-white/5 font-mono text-[10px] text-gray-400">
-                                    ${f.detail}
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    html += `</div></div>`;
-                    container.innerHTML += html;
-                }
-            });
-
+                    <h3 class="font-bold text-sm mb-2">${f.title}</h3>
+                    <div class="bg-black/50 p-3 rounded border border-white/5 font-mono text-[10px] text-gray-500">
+                        ${f.detail}
+                    </div>
+                </div>
+            `).join('');
+            
             showView('detail');
         }
 
         async function loadLogs() {
-            const response = await fetch(`${DB_URL}.json`);
-            const data = await response.json();
+            const resp = await fetch(`${DB_URL}.json`);
+            const data = await resp.json();
             const grid = document.getElementById('pins-grid');
             grid.innerHTML = "";
-            for (let pin in data) {
-                const session = data[pin];
-                const count = session.findings?.findings?.length || 0;
+            for(let pin in data) {
                 grid.innerHTML += `
-                    <div onclick="openReport('${pin}')" class="glass p-8 rounded-[40px] cursor-pointer hover:bg-white/5 transition border-white/5">
-                        <div class="flex justify-between mb-6"><span class="text-[10px] font-black bg-purple-500/10 text-purple-400 px-3 py-1 rounded-full">#${pin}</span></div>
-                        <h2 class="text-xl font-black mb-1">${session.staff}</h2>
-                        <p class="text-[10px] text-gray-600 uppercase font-bold">${session.timestamp}</p>
-                        <div class="mt-8 pt-6 border-t border-white/5 flex justify-between items-center">
-                            <span class="text-[10px] font-bold ${count > 0 ? 'text-red-500' : 'text-green-500'} italic">${count} RESULTS FOUND</span>
-                            <i class="fa fa-chevron-right text-gray-800 text-xs"></i>
-                        </div>
-                    </div>
-                `;
+                    <div onclick="openReport('${pin}')" class="glass p-6 rounded-2xl cursor-pointer hover:border-purple-500/50 transition">
+                        <span class="text-[10px] text-purple-400 font-mono">#${pin}</span>
+                        <h2 class="font-bold text-lg mt-2">${data[pin].staff}</h2>
+                        <p class="text-[10px] text-gray-500">${data[pin].timestamp}</p>
+                    </div>`;
             }
         }
 
-        async function generatePIN() {
-            const pin = Math.floor(100000 + Math.random() * 900000).toString();
-            const data = { status: "pending", staff: "Admin_Kev", timestamp: new Date().toLocaleString(), findings: { findings: [] } };
-            await fetch(`${DB_URL}/${pin}.json`, { method: 'PUT', body: JSON.stringify(data) });
-            loadLogs();
-        }
-
         loadLogs();
-        setInterval(loadLogs, 10000);
+        setInterval(loadLogs, 5000);
     </script>
 </body>
 </html>
