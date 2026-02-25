@@ -150,7 +150,7 @@
         
         <nav class="flex-1 space-y-2">
             <button onclick="abortSession()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl bg-white/5 text-sm font-bold hover:bg-white/10 transition">
-                <i class="fa fa-th-large text-red-500"></i> Active Scans
+                <i class="fa fa-th-large text-red-500"></i> SCANS DATABASE
             </button>
             <button onclick="manageUsers()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-500 text-sm font-bold hover:bg-white/10 transition">
                 <i class="fa fa-users-cog"></i> User Management
@@ -224,17 +224,19 @@
     </main>
 
     <script>
+        // CONFIGURACIÓN CENTRAL
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
 
+        // --- AUTENTICACIÓN MEJORADA (MANTENIENDO TU ESTILO) ---
         async function login() {
-            const user = document.getElementById('op-id').value;
-            const key = document.getElementById('op-key').value;
+            const user = document.getElementById('op-id').value.trim();
+            const key = document.getElementById('op-key').value.trim();
 
-            if(!user || !key) { alert("Please enter credentials."); return; }
+            if(!user || !key) return alert("Credentials required.");
 
             try {
-                // CORRECCIÓN: Usamos .json para que Firebase responda correctamente
+                // Buscamos directamente el usuario para evitar errores de CORS masivos
                 const resp = await fetch(`${DB_URL}/operators/${user}.json`);
                 const data = await resp.json();
 
@@ -245,8 +247,7 @@
                     alert("ACCESS DENIED: Critical authentication failure.");
                 }
             } catch (err) {
-                console.error(err);
-                alert("NETWORK ERROR: Check your SCANS DATABASE connection.");
+                alert("NETWORK ERROR: SCANS DATABASE unreachable.");
             }
         }
 
@@ -262,6 +263,7 @@
             handleRouting();
         }
 
+        // --- LÓGICA DE NAVEGACIÓN Y CARGA ---
         function navigateToPin(pin) { window.location.hash = `/pin/${pin}`; }
         function abortSession() { window.location.hash = ''; }
 
@@ -279,9 +281,7 @@
 
         window.addEventListener('hashchange', handleRouting);
         window.addEventListener('load', () => {
-            if (localStorage.getItem('revenge_auth')) {
-                showMainUI();
-            }
+            if (localStorage.getItem('revenge_auth')) showMainUI();
         });
 
         function showView(v) {
@@ -289,74 +289,13 @@
             document.getElementById('view-detail').classList.toggle('hidden', v !== 'detail');
         }
 
+        // --- INTERACCIÓN CON FIREBASE ---
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
             const operator = localStorage.getItem('revenge_auth');
-            const data = { staff: operator, timestamp: new Date().toLocaleString() };
+            const data = { staff: operator, timestamp: new Date().toLocaleString(), pcName: "WAITING_CONNECTION..." };
             await fetch(`${DB_URL}/pins/${pin}.json`, { method: 'PUT', body: JSON.stringify(data) });
             loadPins();
-        }
-
-        async function deleteScan() {
-            if(!activePin) return;
-            if(!confirm("ARE YOU SURE YOU WANT TO DELETE THIS SCAN?")) return;
-            await fetch(`${DB_URL}/pins/${activePin}.json`, { method: 'DELETE' });
-            abortSession();
-            loadPins();
-        }
-        document.getElementById('btn-delete').onclick = deleteScan;
-
-        async function openReport(pin) {
-            activePin = pin;
-            const resp = await fetch(`${DB_URL}/pins/${pin}.json`);
-            const data = await resp.json();
-
-            if (!data) {
-                console.error("No intel found for PIN:", pin);
-                abortSession();
-                return;
-            }
-            
-            document.getElementById('detail-pcname').innerText = data.pcName || "UNKNOWN_TERMINAL";
-            if(data.specs) {
-                document.getElementById('hw-os').innerText = data.specs.os || "N/A";
-                document.getElementById('hw-cpu').innerText = data.specs.cpu || "N/A";
-                document.getElementById('hw-ram').innerText = data.specs.ram || "N/A";
-                document.getElementById('hw-boot').innerText = data.specs.boot || "N/A";
-                if(data.specs.install && data.specs.install !== "0") {
-                    const d = new Date(data.specs.install * 1000);
-                    document.getElementById('hw-install').innerText = d.toLocaleDateString();
-                }
-            }
-
-            const findings = data.findings?.findings || [];
-            const counts = { Critical: 0, Warning: 0, Suspicious: 0 };
-            findings.forEach(f => { if(counts[f.category] !== undefined) counts[f.category]++; });
-
-            document.getElementById('cat-list').innerHTML = Object.keys(counts).map(c => `
-                <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/5">
-                    <span class="text-[10px] font-black uppercase text-gray-400">${c}</span>
-                    <span class="font-bold text-sm ${counts[c] > 0 ? 'text-red-500' : 'text-gray-700'}">${counts[c]}</span>
-                </div>
-            `).join('');
-
-            const grid = document.getElementById('findings-grid');
-            if (findings.length === 0) {
-                grid.innerHTML = `<div class="p-20 text-center glass-card border-dashed opacity-50 font-black text-xs uppercase tracking-[0.3em]">No threats identified in current sweep</div>`;
-            } else {
-                grid.innerHTML = findings.map(f => `
-                    <div class="finding-entry">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="status-badge badge-critical">Boot Instance</span>
-                            <span class="text-[9px] font-mono text-gray-600 uppercase">Detection ID: ${Math.random().toString(16).substr(2, 6)}</span>
-                        </div>
-                        <h4 class="text-lg font-black uppercase tracking-tight mb-2">${f.title}</h4>
-                        <div class="bg-black/40 p-4 rounded border border-white/5 font-mono text-[11px] text-gray-400 break-words">
-                            ${f.detail}
-                        </div>
-                    </div>`).join('');
-            }
-            showView('detail');
         }
 
         async function loadPins() {
@@ -365,16 +304,14 @@
             const data = await resp.json();
             const grid = document.getElementById('pins-grid');
             grid.innerHTML = "";
+            if(!data) return;
+
             for (let pin in data) {
-                const name = data[pin].pcName || "Awaiting Connection...";
+                const name = data[pin].pcName || "Awaiting...";
                 grid.innerHTML += `
                     <div onclick="navigateToPin('${pin}')" class="glass-card pin-card p-6">
                         <div class="flex justify-between items-start mb-6">
                             <span class="text-[10px] font-black text-red-500 tracking-widest font-mono">#${pin}</span>
-                            <div class="flex gap-1">
-                                <div class="w-1 h-1 rounded-full bg-red-500"></div>
-                                <div class="w-1 h-1 rounded-full bg-red-500/30"></div>
-                            </div>
                         </div>
                         <h3 class="font-black text-lg mb-1 truncate uppercase italic">${name}</h3>
                         <div class="text-[9px] text-gray-600 font-bold uppercase tracking-widest">${data[pin].timestamp}</div>
@@ -382,16 +319,38 @@
             }
         }
 
-        function manageUsers() {
-            alert("USER MANAGEMENT MODULE: Awaiting link to /operators database.");
+        async function openReport(pin) {
+            activePin = pin;
+            const resp = await fetch(`${DB_URL}/pins/${pin}.json`);
+            const data = await resp.json();
+            if (!data) return abortSession();
+
+            document.getElementById('detail-pcname').innerText = data.pcName || "UNKNOWN";
+            
+            // Mapeo de specs
+            if(data.specs) {
+                document.getElementById('hw-os').innerText = data.specs.os || "--";
+                document.getElementById('hw-cpu').innerText = data.specs.cpu || "--";
+                document.getElementById('hw-ram').innerText = data.specs.ram || "--";
+                document.getElementById('hw-boot').innerText = data.specs.boot || "--";
+                document.getElementById('hw-install').innerText = data.specs.install || "--";
+            }
+
+            // Mapeo de hallazgos
+            const findings = data.findings?.findings || [];
+            const grid = document.getElementById('findings-grid');
+            grid.innerHTML = findings.map(f => `
+                <div class="finding-entry">
+                    <h4 class="text-lg font-black uppercase tracking-tight mb-2">${f.title}</h4>
+                    <div class="bg-black/40 p-4 rounded border border-white/5 font-mono text-[11px] text-gray-400 break-words">${f.detail}</div>
+                </div>`).join('') || "No findings.";
+
+            showView('detail');
         }
 
-        setInterval(() => {
-            const hash = window.location.hash;
-            if (hash === '' || hash === '#') {
-                loadPins();
-            }
-        }, 5000);
+        function manageUsers() { alert("ADMIN PANEL: User Management encrypted."); }
+
+        setInterval(() => { if (!window.location.hash.includes('pin')) loadPins(); }, 5000);
     </script>
 </body>
 </html>
