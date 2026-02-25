@@ -236,20 +236,27 @@
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
 
-        // --- SISTEMA DE AUTENTICACIÓN ---
+        // --- SISTEMA DE AUTENTICACIÓN CORREGIDO ---
         async function login() {
             const user = document.getElementById('op-id').value;
             const key = document.getElementById('op-key').value;
 
-            // Buscamos en la nueva rama /operators de tu Firebase
-            const resp = await fetch(`${DB_URL}/operators/${user}.json`);
-            const data = await resp.json();
+            try {
+                // Fetch optimizado para Realtime Database
+                const resp = await fetch(`${DB_URL}/operators/${user}.json`, {
+                    method: 'GET'
+                });
+                const data = await resp.json();
 
-            if (data && data.key === key) {
-                localStorage.setItem('revenge_auth', user);
-                showMainUI();
-            } else {
-                alert("ACCESS DENIED: Critical authentication failure.");
+                if (data && data.key === key) {
+                    localStorage.setItem('revenge_auth', user);
+                    showMainUI();
+                } else {
+                    alert("ACCESS DENIED: Critical authentication failure.");
+                }
+            } catch (error) {
+                console.error("Connection Error:", error);
+                alert("DATABASE ERROR: Could not connect to SCANS DATABASE.");
             }
         }
 
