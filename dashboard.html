@@ -13,7 +13,7 @@
         .glass-card { background: var(--panel-bg); border: 1px solid var(--glass-border); border-radius: 12px; }
         .pin-card { cursor: pointer; transition: all 0.3s ease; background: linear-gradient(145deg, #0d0d10 0%, #0a0a0c 100%); border: 1px solid var(--glass-border); }
         .pin-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .finding-entry { background: #0f0f13; border-left: 4px solid var(--accent); border-radius: 4px 12px 12px 4px; padding: 20px; margin-bottom: 16px; border-right: 1px solid rgba(255,65,65,0.05); }
+        .finding-entry { background: #0f0f13; border-top: 3px solid var(--accent); border-radius: 8px; padding: 15px; height: 100%; display: flex; flex-direction: column; }
         .hw-label { font-family: 'JetBrains Mono', monospace; color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
         .hw-value { color: #fff; font-weight: 700; font-size: 13px; margin-top: 2px; }
         .btn-action { font-weight: 900; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; transition: all 0.2s; }
@@ -127,31 +127,32 @@
             const data = await res.json();
             const specs = data.specs || {};
             document.getElementById('report-content').innerHTML = `
-                <div class="col-span-12 lg:col-span-4 space-y-6">
-                    <div class="glass-card p-8 border border-white/5">
+                <div class="col-span-12 lg:col-span-3 space-y-6">
+                    <div class="glass-card p-6 border border-white/5">
                         <div class="hw-label mb-4 text-red-500 font-black">System Signature</div>
-                        <h2 class="text-3xl font-black mb-8 italic uppercase">${data.pcName || "UNKNOWN"}</h2>
-                        <div class="grid grid-cols-1 gap-6">
-                            <div><div class="hw-label">Operating System</div><div class="hw-value">${specs.os || "--"}</div></div>
-                            <div><div class="hw-label">Processor (CPU)</div><div class="hw-value">${specs.cpu || "--"}</div></div>
+                        <h2 class="text-2xl font-black mb-6 italic uppercase">${data.pcName || "UNKNOWN"}</h2>
+                        <div class="space-y-4">
+                            <div><div class="hw-label">OS</div><div class="hw-value">${specs.os || "--"}</div></div>
+                            <div><div class="hw-label">CPU</div><div class="hw-value">${specs.cpu || "--"}</div></div>
                             <div class="grid grid-cols-2 gap-4">
-                                <div><div class="hw-label">Physical RAM</div><div class="hw-value">${specs.ram || "--"}</div></div>
-                                <div><div class="hw-label">System Uptime</div><div class="hw-value">${specs.boot || "--"}</div></div>
+                                <div><div class="hw-label">RAM</div><div class="hw-value">${specs.ram || "--"}</div></div>
+                                <div><div class="hw-label">UPTIME</div><div class="hw-value">${specs.boot || "--"}</div></div>
                             </div>
-                            <div><div class="hw-label">Install Date</div><div class="hw-value">${specs.install || "--"}</div></div>
+                            <div><div class="hw-label">INSTALL</div><div class="hw-value">${specs.install || "--"}</div></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-span-12 lg:col-span-8">
-                    <h3 class="text-xl font-black uppercase italic mb-8 flex items-center gap-3"><span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings</h3>
-                    <div id="findings-list">${(data.findings?.findings || []).map(f => `
+                <div class="col-span-12 lg:col-span-9">
+                    <h3 class="text-xl font-black uppercase italic mb-6 flex items-center gap-3"><span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        ${(data.findings?.findings || []).map(f => `
                         <div class="finding-entry">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="text-lg font-black uppercase tracking-tight text-white">${f.title}</h4>
-                                <span class="text-[9px] bg-red-600/10 text-red-500 px-2 py-1 rounded font-bold">CRITICAL</span>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-[10px] font-black uppercase tracking-tight text-white truncate pr-2">${f.title}</h4>
+                                <span class="text-[8px] bg-red-600/10 text-red-500 px-1.5 py-0.5 rounded font-bold">CRITICAL</span>
                             </div>
-                            <div class="bg-black/40 p-4 rounded border border-white/5 font-mono text-[11px] text-gray-400 leading-relaxed">${f.detail}</div>
-                        </div>`).join('') || '<p class="text-gray-600 font-bold uppercase text-xs">No threats detected in this scan.</p>'}
+                            <div class="bg-black/40 p-3 rounded border border-white/5 font-mono text-[10px] text-gray-400 leading-tight flex-1">${f.detail}</div>
+                        </div>`).join('') || '<p class="text-gray-600 font-bold uppercase text-xs">No threats detected.</p>'}
                     </div>
                 </div>`;
             document.getElementById('view-list').classList.add('hidden');
