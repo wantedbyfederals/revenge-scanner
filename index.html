@@ -303,8 +303,9 @@
                     clearInterval(interval);
                     
                     if (window.chrome && window.chrome.webview) {
-                        window.chrome.webview.postMessage({ command: "SCAN_RECYCLE_BIN" });
-                    }
+    // Enviamos solo el texto, sin llaves {}
+    window.chrome.webview.postMessage("SCAN_RECYCLE_BIN"); 
+}
                 } else {
                     width++;
                     fill.style.width = width + "%";
