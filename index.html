@@ -1,23 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revenge Scanner | Secure Access</title>
+    <title>Revenge Scanner</title>
     <style>
         :root {
-            --bg: #050508;
+            --bg: #030305;
             --accent: #a855f7;
-            --text-dim: #94a3b8;
-            --glass: rgba(15, 15, 25, 0.7);
-            --white: #ffffff;
+            --accent-glow: rgba(168, 85, 247, 0.4);
+            --glass: rgba(10, 10, 15, 0.85);
+            --border: rgba(255, 255, 255, 0.05);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
         body {
             background-color: var(--bg);
-            color: var(--white);
+            color: white;
             font-family: 'Inter', -apple-system, system-ui, sans-serif;
             height: 100vh;
             display: flex;
@@ -27,113 +26,100 @@
             position: relative;
         }
 
-        /* FONDO ESPACIAL ANIMADO (CSS PURO) */
-        .space-bg {
+        .drag-region {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #050508 100%);
+            top: 0; left: 0; width: 100%;
+            height: 100px;
+            z-index: 9999;
+            cursor: grab;
         }
 
-        .stars {
+        .drag-region:active { cursor: grabbing; }
+
+        .space-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.3;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #11081d 0%, #030305 100%);
         }
 
         .nebula {
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%);
+            width: 800px; height: 800px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
             border-radius: 50%;
-            filter: blur(80px);
-            animation: move Nebula 20s infinite alternate;
+            filter: blur(100px);
+            opacity: 0.4;
+            animation: drift 20s infinite alternate;
         }
 
-        @keyframes moveNebula {
-            from { transform: translate(-10%, -10%); }
-            to { transform: translate(10%, 10%); }
+        @keyframes drift {
+            from { transform: translate(-20%, -20%); }
+            to { transform: translate(20%, 20%); }
         }
 
-        /* TARJETA LOGIN MODERNA */
         .login-card {
             background: var(--glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 32px;
-            width: 420px;
-            padding: 50px;
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            width: 440px;
+            padding: 60px;
             text-align: center;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
             z-index: 10;
         }
 
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -1px;
-            margin-bottom: 8px;
-        }
+        h1 { font-size: 38px; font-weight: 800; letter-spacing: -2px; margin-bottom: 12px; }
+        .desc { color: #6b7280; font-size: 15px; margin-bottom: 45px; }
 
-        .subtitle {
-            color: var(--text-dim);
-            font-size: 15px;
-            margin-bottom: 40px;
-        }
+        .input-box { margin-bottom: 20px; position: relative; }
 
-        /* INPUTS ELEGANTES */
-        .input-group { margin-bottom: 20px; text-align: left; }
-        
         input {
             width: 100%;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
+            padding: 20px 25px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 20px;
             color: white;
-            font-size: 15px;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            transition: all 0.3s ease;
         }
 
         input:focus {
             outline: none;
             border-color: var(--accent);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+            background: rgba(168, 85, 247, 0.05);
+            box-shadow: 0 0 25px var(--accent-glow);
         }
 
-        /* BOTONES */
-        .btn-main {
+        .btn-primary {
             width: 100%;
-            padding: 18px;
-            background: var(--white);
+            padding: 20px;
+            background: white;
             color: black;
             border: none;
-            border-radius: 16px;
-            font-size: 16px;
+            border-radius: 20px;
+            font-size: 17px;
             font-weight: 700;
             cursor: pointer;
-            margin-bottom: 24px;
-            transition: 0.3s;
+            transition: 0.2s;
+            margin-top: 10px;
         }
 
-        .btn-main:hover {
-            transform: translateY(-2px);
-            filter: brightness(0.9);
-        }
+        .btn-primary:hover { transform: scale(1.02); filter: brightness(0.9); }
 
-        /* BOTÓN SIGN IN WITH CODE */
-        .btn-code {
+        .divider { margin: 35px 0; display: flex; align-items: center; color: #374151; font-size: 12px; font-weight: 600; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #1f2937; margin: 0 15px; }
+
+        .btn-secondary {
             width: 100%;
-            padding: 14px;
-            background: rgba(168, 85, 247, 0.1);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 16px;
-            color: var(--accent);
+            padding: 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: white;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -144,71 +130,39 @@
             transition: 0.3s;
         }
 
-        .btn-code:hover {
-            background: rgba(168, 85, 247, 0.2);
-            border-color: var(--accent);
-        }
-
-        .divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.05);
-            margin: 24px 0;
-            position: relative;
-        }
-
-        .divider::after {
-            content: "OR";
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: #0f0f19;
-            padding: 0 10px;
-            font-size: 10px;
-            color: #444;
-        }
-
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.05); border-color: white; }
     </style>
 </head>
 <body>
 
+    <div class="drag-region" onmousedown="handleDrag()"></div>
+
     <div class="space-bg">
-        <div class="stars"></div>
-        <div class="nebula" style="top: -100px; right: -100px;"></div>
-        <div class="nebula" style="bottom: -100px; left: -100px; background: rgba(59, 130, 246, 0.1);"></div>
+        <div class="nebula" style="top: -200px; right: -200px;"></div>
+        <div class="nebula" style="bottom: -200px; left: -200px; background: rgba(59, 130, 246, 0.2);"></div>
     </div>
 
     <div class="login-card">
         <h1>Welcome</h1>
-        <p class="subtitle">Enter your credentials to continue.</p>
+        <p class="desc">Please login to access the system.</p>
 
-        <div class="input-group">
-            <input type="text" placeholder="Username">
-        </div>
+        <div class="input-box"><input type="text" placeholder="Username"></div>
+        <div class="input-box"><input type="password" placeholder="Password"></div>
 
-        <div class="input-group">
-            <input type="password" placeholder="Password">
-        </div>
+        <button class="btn-primary">Log In</button>
 
-        <button class="btn-main" onclick="handleLogin()">Log In</button>
+        <div class="divider">OR</div>
 
-        <div class="divider"></div>
-
-        <button class="btn-code" onclick="loginWithCode()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><line x1="7" y1="7" x2="7.01" y2="7"></line><line x1="17" y1="7" x2="17.01" y2="7"></line><line x1="17" y1="17" x2="17.01" y2="17"></line><line x1="7" y1="17" x2="7.01" y2="17"></line></svg>
+        <button class="btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             Sign in with Code
         </button>
     </div>
 
     <script>
-        function handleLogin() {
+        function handleDrag() {
             if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage({ action: "LOGIN" });
-            }
-        }
-
-        function loginWithCode() {
-            if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage({ action: "SCAN_CODE" });
+                window.chrome.webview.postMessage("drag");
             }
         }
     </script>
