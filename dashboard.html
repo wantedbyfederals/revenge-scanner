@@ -28,7 +28,6 @@
             width: 260px;
         }
 
-        /* Modern Glass Card */
         .glass-card {
             background: var(--panel-bg);
             border: 1px solid var(--glass-border);
@@ -55,7 +54,6 @@
             background: linear-gradient(45deg, transparent 50%, rgba(255,65,65,0.1) 50%);
         }
 
-        /* Findings UI */
         .finding-entry {
             background: #0f0f13;
             border-left: 4px solid var(--accent);
@@ -63,10 +61,6 @@
             padding: 20px;
             margin-bottom: 16px;
             transition: 0.2s;
-        }
-
-        .finding-entry:hover {
-            background: #14141a;
         }
 
         .status-badge {
@@ -93,7 +87,6 @@
             font-size: 13px;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #1a1a20; border-radius: 10px; }
@@ -117,7 +110,7 @@
             </div>
             <div>
                 <div class="font-black text-xl tracking-tighter leading-none">REVENGE</div>
-                <div class="text-[9px] text-gray-500 font-bold tracking-[0.2em] uppercase">Security Panel</div>
+                <div class="text-[9px] text-gray-500 font-bold tracking-[0.2em] uppercase">ADMIN PANEL</div>
             </div>
         </div>
         
@@ -140,11 +133,11 @@
         <div id="view-list">
             <div class="flex justify-between items-center mb-12">
                 <div>
-                    <h1 class="text-4xl font-black italic tracking-tight uppercase">Intelligence Database</h1>
+                    <h1 class="text-4xl font-black italic tracking-tight uppercase">SCANS DATABASE</h1>
                     <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mt-2">Real-time terminal monitoring</p>
                 </div>
                 <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white transform hover:-translate-y-1 shadow-2xl">
-                    Deploy New Instance
+                    GENERATE PIN
                 </button>
             </div>
             
@@ -192,8 +185,7 @@
                             Live Findings
                         </h3>
                     </div>
-                    <div id="findings-grid">
-                        </div>
+                    <div id="findings-grid"></div>
                 </div>
             </div>
         </div>
@@ -229,7 +221,6 @@
             const resp = await fetch(`${DB_URL}/${pin}.json`);
             const data = await resp.json();
             
-            // Name & Hardware
             document.getElementById('detail-pcname').innerText = data.pcName || "UNKNOWN_TERMINAL";
             if(data.specs) {
                 document.getElementById('hw-os').innerText = data.specs.os || "N/A";
