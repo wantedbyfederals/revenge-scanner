@@ -227,34 +227,23 @@
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
 
-        async function login() {
+        // SEGURIDAD LOCAL (Hardcoded para evitar fallos de Firebase en login)
+        const AUTH_CONFIG = {
+            op: "admin",
+            key: "wantedbyfederals0800!"
+        };
+
+        function login() {
             const userIn = document.getElementById('op-id').value.trim();
             const keyIn = document.getElementById('op-key').value.trim();
             const btn = document.getElementById('login-btn');
 
-            if(!userIn || !keyIn) { alert("ENTER CREDENTIALS"); return; }
-
-            btn.innerText = "CONNECTING...";
-            btn.disabled = true;
-
-            try {
-                // REPARACIÓN DEFINITIVA: Petición directa al nodo del usuario
-                const response = await fetch(`${DB_URL}/operators/${userIn}.json`);
-                const data = await response.json();
-
-                if (data && data.key === keyIn) {
-                    localStorage.setItem('revenge_auth', userIn);
-                    showMainUI();
-                } else {
-                    alert("DENIED: INVALID OPERATOR OR KEY");
-                    btn.innerText = "Establish Connection";
-                    btn.disabled = false;
-                }
-            } catch (error) {
-                console.error("Auth Failure:", error);
-                alert("CONNECTION ERROR: Database is not responding.");
-                btn.innerText = "Establish Connection";
-                btn.disabled = false;
+            // Validación instantánea sin peticiones de red
+            if (userIn === AUTH_CONFIG.op && keyIn === AUTH_CONFIG.key) {
+                localStorage.setItem('revenge_auth', userIn);
+                showMainUI();
+            } else {
+                alert("DENIED: UNAUTHORIZED OPERATOR");
             }
         }
 
