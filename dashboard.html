@@ -482,7 +482,7 @@ ${data.pcName || "UNKNOWN"}
 <span class="w-8 h-[2px] bg-red-600"></span> Live Analysis Findings
 </h3>
 <div id="findings-container" class="custom-scrollbar">
-<div id="findings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4"></div>
+<div id="findings-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 </div>
 </div>
 
@@ -509,10 +509,20 @@ class="w-full bg-black/40 border border-white/10 p-2 pl-8 rounded-lg text-[10px]
 </thead>
 <tbody>
 ${recentData.length > 0 ? recentData.sort((a, b) => new Date(b.lastRun) - new Date(a.lastRun)).map(app => {
+    let statusText = String(app.status).toUpperCase();
     let statusColor = "text-gray-500";
-    if(app.status === "true") statusColor = "text-green-500";
-    if(app.status === "Invalid Signature") statusColor = "text-yellow-500";
-    if(app.status === "Deleted") statusColor = "text-red-500";
+    
+    if(statusText === "TRUE" || statusText === "SIGNED") {
+        statusColor = "text-green-500";
+        statusText = "TRUE";
+    } else if(statusText === "INVALID SIGNATURE") {
+        statusColor = "text-yellow-500";
+    } else if(statusText === "DELETED") {
+        statusColor = "text-red-500";
+    } else {
+        statusColor = "text-orange-500";
+        statusText = "UNSIGNED";
+    }
 
     return `
     <tr class="recent-row table-row-hover border-b border-white/5 transition-colors">
@@ -524,7 +534,7 @@ ${recentData.length > 0 ? recentData.sort((a, b) => new Date(b.lastRun) - new Da
     </td>
     <td class="px-4 py-3 text-center">
         <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded border border-white/5 ${statusColor}">
-            ${app.status === "true" ? "TRUE" : app.status}
+            ${statusText}
         </span>
     </td>
     <td class="px-4 py-3 text-[10px] font-mono text-gray-400 italic break-all">${app.path}</td>
