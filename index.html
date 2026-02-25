@@ -2,258 +2,176 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REVENGE SCANNER | SYSTEM ACCESS</title>
+    <title>REVENGE SCANNER | SYSTEM</title>
     <style>
         :root {
-            --bg: #0a0a0c;
-            --panel: #121214;
-            --accent: #a855f7;
-            --accent-glow: rgba(168, 85, 247, 0.4);
-            --text-dim: #94a3b8;
-            --border: #1e1e22;
+            --bg: #000000;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --accent: #ffffff;
+            --text-secondary: #888888;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            margin: 0;
-            padding: 20px;
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             height: 100vh;
             display: flex;
-            gap: 20px;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
+            /* Fondo espacial sutil */
+            background-image: 
+                radial-gradient(circle at 50% 50%, #111 0%, #000 100%),
+                url('https://www.transparenttextures.com/patterns/stardust.png');
         }
 
-        /* DISEÑO DE PANELES ESTILO IMAGEN */
-        .card {
-            background: var(--panel);
+        /* Contenedor Flotante Estilo Atomz */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-radius: 24px;
-            padding: 40px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            width: 420px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            font-size: 1.2rem;
-            margin-bottom: 60px;
-        }
-
-        .logo-area span { color: var(--accent); }
-
-        h1 { font-size: 2.5rem; margin: 0; font-weight: 700; }
-        .subtitle { color: var(--text-dim); margin-bottom: 40px; font-size: 1rem; }
-
-        /* INPUTS ESTILO MODERNO */
-        .input-box { margin-bottom: 25px; }
-        label { 
-            display: block; 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            margin-bottom: 8px; 
-            color: var(--text-dim);
+        h1 {
+            font-size: 28px;
             font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        /* Inputs Modernos y Limpios */
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            margin-left: 4px;
         }
 
         input {
             width: 100%;
-            padding: 14px 18px;
-            background: rgba(0,0,0,0.2);
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
             border-radius: 12px;
             color: white;
-            font-family: monospace;
-            transition: 0.3s;
+            font-size: 14px;
+            transition: all 0.2s ease;
         }
 
         input:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        /* BOTÓN PRINCIPAL GLOW */
-        .btn-init {
-            margin-top: auto;
+        /* Botón Elegante Blanco y Negro */
+        .btn-primary {
             width: 100%;
-            padding: 18px;
-            background: linear-gradient(90deg, #8b5cf6, #a855f7);
+            padding: 16px;
+            background: var(--accent);
+            color: #000;
             border: none;
-            border-radius: 14px;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2);
-            transition: 0.3s;
+            margin-top: 10px;
+            transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
-        .btn-init:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px var(--accent-glow);
+        .btn-primary:hover {
+            transform: scale(1.02);
+            opacity: 0.9;
         }
 
-        /* PANEL DERECHO: VISUALIZACIÓN */
-        .right-panel { flex: 1.2; text-align: center; }
-        
-        .header-stats { margin-bottom: 20px; }
-        .header-stats h2 { font-size: 2rem; margin: 0; }
-        .header-stats p { color: var(--accent); font-weight: 600; margin: 5px 0; font-size: 0.9rem; }
-
-        /* ESCENA DEL CUBO 3D */
-        .scene {
-            width: 100%;
-            height: 400px;
-            perspective: 800px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .cube {
-            width: 180px;
-            height: 180px;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: rotateCube 20s infinite linear;
-        }
-
-        .face {
+        /* Animación de fondo (Planeta/Nebulosa sutil) */
+        .orb {
             position: absolute;
-            width: 180px;
-            height: 180px;
-            background: rgba(168, 85, 247, 0.05);
-            border: 1px solid var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+            top: -200px;
+            right: -200px;
+        }
+
+        .footer-link {
+            margin-top: 30px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .footer-link span {
             color: var(--accent);
-            font-family: monospace;
-            backdrop-filter: blur(2px);
+            cursor: pointer;
+            text-decoration: none;
         }
 
-        .f-front  { transform: rotateY(0deg) translateZ(90px); }
-        .f-back   { transform: rotateY(180deg) translateZ(90px); }
-        .f-right  { transform: rotateY(90deg) translateZ(90px); }
-        .f-left   { transform: rotateY(-90deg) translateZ(90px); }
-        .f-top    { transform: rotateX(90deg) translateZ(90px); }
-        .f-bottom { transform: rotateX(-90deg) translateZ(90px); }
-
-        @keyframes rotateCube {
-            from { transform: rotateX(0) rotateY(0); }
-            to { transform: rotateX(360deg) rotateY(360deg); }
-        }
-
-        /* TERMINAL DE LOGS */
-        .terminal {
-            background: #000;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            height: 180px;
-            padding: 20px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            text-align: left;
-            overflow-y: auto;
-        }
-
-        .log-line { margin-bottom: 5px; }
-        .log-success { color: #4ade80; }
-        .log-info { color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="logo-area">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-            REVENGE <span>SCANNER</span>
-        </div>
+    <div class="orb"></div>
 
-        <h1>SYSTEM ACCESS</h1>
-        <p class="subtitle">Configure Scan Parameters</p>
+    <div class="glass-card">
+        <h1>System Access</h1>
+        <p class="subtitle">Ready for deep network reconnaissance.</p>
 
-        <div class="input-box">
+        <div class="input-group">
             <label>Target IP / Range</label>
-            <input type="text" id="ipInput" placeholder="192.168.1.0/24">
+            <input type="text" id="targetIp" placeholder="e.g. 192.168.1.1">
         </div>
 
-        <div class="input-box">
-            <label>Port Range</label>
-            <input type="text" id="portInput" placeholder="1-65535">
+        <div class="input-group">
+            <label>Port Protocol</label>
+            <input type="text" id="portRange" placeholder="e.g. 80, 443, 3306">
         </div>
 
-        <button class="btn-init" onclick="startExecution()">
-            <span>«</span> INITIALIZE PROTOCOL <span>»</span>
-        </button>
-    </div>
+        <button class="btn-primary" onclick="sendToNative()">Initialize Protocol</button>
 
-    <div class="card right-panel">
-        <div class="header-stats">
-            <h2>GLOBAL THREAT INTEL</h2>
-            <p>ACTIVE DATA STREAMS: 88.7M</p>
-        </div>
-
-        <div class="scene">
-            <div class="cube">
-                <div class="face f-front">DATA_STREAM</div>
-                <div class="face f-back">ENCRYPTING</div>
-                <div class="face f-right">BYPASSING</div>
-                <div class="face f-left">ANALYZING</div>
-                <div class="face f-top">REVENGE</div>
-                <div class="face f-bottom">ROOT_SESS</div>
-            </div>
-        </div>
-
-        <div class="terminal" id="terminal">
-            <div class="log-line log-info">> [SYS] System ready. Awaiting target initialization...</div>
+        <div class="footer-link">
+            New to Revenge? <span>Sign up</span>
         </div>
     </div>
 
     <script>
-        function appendLog(text, type = '') {
-            const terminal = document.getElementById('terminal');
-            const div = document.createElement('div');
-            div.className = `log-line ${type}`;
-            div.textContent = `> ${text}`;
-            terminal.appendChild(div);
-            terminal.scrollTop = terminal.scrollHeight;
-        }
+        function sendToNative() {
+            const ip = document.getElementById('targetIp').value;
+            const ports = document.getElementById('portRange').value;
 
-        function startExecution() {
-            const ip = document.getElementById('ipInput').value || '127.0.0.1';
-            appendLog(`Initializing sub-processors...`, 'log-info');
-            appendLog(`Target set to: ${ip}`, 'log-success');
-
-            // Enviar mensaje a C++
             if (window.chrome && window.chrome.webview) {
                 window.chrome.webview.postMessage({
-                    action: "START_SCAN",
+                    command: "START_SCAN",
                     target: ip,
-                    ports: document.getElementById('portInput').value
+                    range: ports
                 });
+            } else {
+                console.log("Comando enviado:", ip, ports);
+                alert("Protocolo inicializado en consola (Modo Web)");
             }
-        }
-
-        // Esta función la llamará tu C++ cuando encuentre un puerto
-        function onPortFound(port) {
-            appendLog(`Port ${port} OPEN on target system`, 'log-success');
         }
     </script>
 </body>
