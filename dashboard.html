@@ -115,7 +115,7 @@
         </div>
         
         <nav class="flex-1 space-y-2">
-            <button onclick="showView('list')" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl bg-white/5 text-sm font-bold hover:bg-white/10 transition">
+            <button onclick="abortSession()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl bg-white/5 text-sm font-bold hover:bg-white/10 transition">
                 <i class="fa fa-th-large text-red-500"></i> Active Scans
             </button>
         </nav>
@@ -147,7 +147,7 @@
 
         <div id="view-detail" class="hidden">
             <div class="flex justify-between items-center mb-10">
-                <button onclick="showView('list')" class="flex items-center gap-3 text-xs font-black uppercase text-gray-500 hover:text-white transition">
+                <button onclick="abortSession()" class="flex items-center gap-3 text-xs font-black uppercase text-gray-500 hover:text-white transition">
                     <i class="fa fa-chevron-left"></i> Abort Session
                 </button>
                 <div class="flex gap-4">
@@ -200,6 +200,30 @@
             document.getElementById('view-detail').classList.toggle('hidden', v !== 'detail');
         }
 
+        // --- SISTEMA DE RUTAS ---
+        function navigateToPin(pin) {
+            window.location.hash = `/pin/${pin}`;
+        }
+
+        function abortSession() {
+            window.location.hash = '';
+        }
+
+        async function handleRouting() {
+            const hash = window.location.hash;
+            if (hash.startsWith('#/pin/')) {
+                const pin = hash.split('/')[2];
+                await openReport(pin);
+            } else {
+                showView('list');
+                loadPins();
+            }
+        }
+
+        window.addEventListener('hashchange', handleRouting);
+        window.addEventListener('load', handleRouting);
+        // ------------------------
+
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
             const data = { staff: "Admin_Deploy", timestamp: new Date().toLocaleString() };
@@ -211,7 +235,7 @@
             if(!activePin) return;
             if(!confirm("ARE YOU SURE YOU WANT TO PURGE THIS INTEL?")) return;
             await fetch(`${DB_URL}/${activePin}.json`, { method: 'DELETE' });
-            showView('list');
+            abortSession();
             loadPins();
         }
         document.getElementById('btn-delete').onclick = deleteScan;
@@ -220,6 +244,12 @@
             activePin = pin;
             const resp = await fetch(`${DB_URL}/${pin}.json`);
             const data = await resp.json();
+
+            if (!data) {
+                console.error("No intel found for PIN:", pin);
+                abortSession();
+                return;
+            }
             
             document.getElementById('detail-pcname').innerText = data.pcName || "UNKNOWN_TERMINAL";
             if(data.specs) {
@@ -271,7 +301,7 @@
             for (let pin in data) {
                 const name = data[pin].pcName || "Awaiting Connection...";
                 grid.innerHTML += `
-                    <div onclick="openReport('${pin}')" class="glass-card pin-card p-6">
+                    <div onclick="navigateToPin('${pin}')" class="glass-card pin-card p-6">
                         <div class="flex justify-between items-start mb-6">
                             <span class="text-[10px] font-black text-red-500 tracking-widest font-mono">#${pin}</span>
                             <div class="flex gap-1">
@@ -285,8 +315,11 @@
             }
         }
 
-        loadPins();
-        setInterval(loadPins, 5000);
+        setInterval(() => {
+            if (window.location.hash === '' || window.location.hash === '#') {
+                loadPins();
+            }
+        }, 5000);
     </script>
 </body>
 </html>
