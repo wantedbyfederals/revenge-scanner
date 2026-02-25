@@ -6,76 +6,161 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #020204; color: #f3f4f6; }
-        .glass { background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(255, 255, 255, 0.03); }
+        body { background-color: #020204; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .card-detection { background: #0a0a0c; border: 1px solid #1a1a1c; border-left-width: 4px; transition: 0.3s; }
+        .detail-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Colores de categorías */
+        .cat-critical { border-left-color: #ef4444; }
+        .cat-suspicious { border-left-color: #3b82f6; }
+        .cat-warning { border-left-color: #f59e0b; }
+        .cat-integrity { border-left-color: #10b981; }
+        
+        .badge-red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
     </style>
 </head>
-<body class="p-10">
-    <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-10">
-            <div>
-                <h1 class="text-3xl font-bold">Detection Logs</h1>
-                <p class="text-gray-500 text-sm">Real-time Session Management</p>
-            </div>
-            <button onclick="generatePIN()" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-bold transition">
-                <i class="fa fa-plus mr-2"></i> Generate New PIN
-            </button>
-        </header>
+<body class="flex h-screen overflow-hidden">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="logs-container">
+    <aside class="w-64 border-r border-white/5 flex flex-col p-6 space-y-8">
+        <div class="text-xl font-black text-purple-500 italic">REVENGE</div>
+        <nav class="space-y-2">
+            <button onclick="showView('list')" class="w-full flex items-center space-x-3 p-3 hover:bg-white/5 rounded-xl transition text-gray-400">
+                <i class="fa fa-list"></i> <span>Recent Scans</span>
+            </button>
+            <button class="w-full flex items-center space-x-3 p-3 hover:bg-white/5 rounded-xl transition text-gray-400">
+                <i class="fa fa-key"></i> <span>Manage PINs</span>
+            </button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto p-10">
+        
+        <div id="view-list">
+            <header class="flex justify-between items-center mb-10">
+                <div>
+                    <h1 class="text-3xl font-bold">Detection Logs</h1>
+                    <p class="text-gray-500 text-sm font-mono">Real-time Session Management</p>
+                </div>
+                <button onclick="generatePIN()" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-bold transition shadow-lg shadow-purple-500/20">
+                    Generate New PIN
+                </button>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="pins-grid"></div>
+        </div>
+
+        <div id="view-detail" class="hidden">
+            <button onclick="showView('list')" class="mb-6 text-gray-500 hover:text-white transition flex items-center">
+                <i class="fa fa-arrow-left mr-2"></i> Back to list
+            </button>
+            
+            <div class="flex gap-8">
+                <div class="w-80 space-y-6">
+                    <div class="glass p-6 rounded-2xl">
+                        <h2 class="text-sm font-bold uppercase tracking-wider mb-4 flex items-center">
+                            <i class="fa fa-shield-alt mr-2 text-purple-500"></i> Detection Results
+                        </h2>
+                        <div class="space-y-3" id="summary-stats">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 space-y-4">
+                    <h2 class="text-xl font-bold mb-6 flex items-center">
+                        <i class="fa fa-bug mr-2 text-red-500"></i> Detection Records
+                    </h2>
+                    <div id="detections-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                        </div>
+                </div>
             </div>
-    </div>
+        </div>
+    </main>
 
     <script>
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com/pins";
 
+        function showView(view) {
+            document.getElementById('view-list').classList.toggle('hidden', view !== 'list');
+            document.getElementById('view-detail').classList.toggle('hidden', view !== 'detail');
+        }
+
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
-            const data = {
-                status: "pending",
-                staff: "Admin_Kev",
-                timestamp: new Date().toLocaleString(),
-                findings: []
-            };
+            const data = { status: "pending", staff: "Admin_Kev", timestamp: new Date().toLocaleString(), findings: { findings: [] } };
             await fetch(`${DB_URL}/${pin}.json`, { method: 'PUT', body: JSON.stringify(data) });
-            alert("New PIN Created: " + pin);
             loadLogs();
         }
 
         async function loadLogs() {
             const response = await fetch(`${DB_URL}.json`);
             const data = await response.json();
-            const container = document.getElementById('logs-container');
-            container.innerHTML = "";
+            const grid = document.getElementById('pins-grid');
+            grid.innerHTML = "";
 
             for (let pin in data) {
                 const session = data[pin];
-                const hasDetections = session.findings && session.findings.findings;
-                
-                let findingsHTML = "";
-                if(hasDetections) {
-                    session.findings.findings.forEach(f => {
-                        findingsHTML += `<div class="mt-2 p-2 bg-red-500/10 border border-red-500/20 rounded text-[10px] text-red-400">
-                            <b>${f.category}:</b> ${f.title}
-                        </div>`;
-                    });
-                }
-
-                container.innerHTML += `
-                    <div class="glass p-6 rounded-2xl border-l-4 ${hasDetections ? 'border-red-500' : 'border-purple-500'}">
-                        <div class="flex justify-between mb-4">
-                            <span class="text-xs font-mono text-purple-400">#${pin}</span>
-                            <span class="text-[10px] text-gray-500 uppercase">${session.timestamp}</span>
+                const findings = session.findings?.findings || [];
+                grid.innerHTML += `
+                    <div onclick="openReport('${pin}')" class="glass p-6 rounded-2xl cursor-pointer hover:border-purple-500/50 transition group">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-1 rounded">#${pin}</span>
+                            <i class="fa fa-external-link-alt text-gray-700 group-hover:text-purple-400 transition"></i>
                         </div>
-                        <h3 class="font-bold">Session: ${session.staff}</h3>
-                        <p class="text-xs text-gray-400 mt-1">Status: ${hasDetections ? 'FLAGGED' : 'PENDING/CLEAN'}</p>
-                        <div class="mt-4">${findingsHTML || '<p class="text-[10px] text-gray-600 italic">No detections yet.</p>'}</div>
+                        <h3 class="font-bold text-lg">${session.staff}</h3>
+                        <p class="text-[10px] text-gray-500 uppercase mt-1">${session.timestamp}</p>
+                        <div class="mt-4 text-xs ${findings.length > 0 ? 'text-red-400' : 'text-green-500'}">
+                            ${findings.length} Detections found
+                        </div>
                     </div>
                 `;
             }
         }
 
-        setInterval(loadLogs, 5000);
+        async function openReport(pin) {
+            const resp = await fetch(`${DB_URL}/${pin}.json`);
+            const data = await resp.json();
+            const findings = data.findings?.findings || [];
+
+            // 1. Generar Estadísticas Izquierdas
+            const stats = { Critical: 0, Suspicious: 0, Warning: 0, Integrity: 0 };
+            findings.forEach(f => stats[f.category]++);
+
+            const summaryContainer = document.getElementById('summary-stats');
+            summaryContainer.innerHTML = `
+                ${renderStatItem("Critical Records", stats.Critical, "ef4444")}
+                ${renderStatItem("Integrity Records", stats.Integrity, "10b981")}
+                ${renderStatItem("Warning Records", stats.Warning, "f59e0b")}
+                ${renderStatItem("Suspicious Records", stats.Suspicious, "3b82f6")}
+            `;
+
+            // 2. Generar Tarjetas (Diseño de imagen)
+            const detGrid = document.getElementById('detections-grid');
+            detGrid.innerHTML = findings.map(f => `
+                <div class="card-detection p-5 rounded-xl cat-${f.category.toLowerCase()}">
+                    <div class="flex justify-between items-start mb-4">
+                        <i class="fa fa-exclamation-triangle ${f.category === 'Critical' ? 'text-red-500' : 'text-blue-500'}"></i>
+                        <span class="badge-red text-[9px] font-black px-2 py-1 rounded uppercase">Boot instance</span>
+                    </div>
+                    <h4 class="font-bold text-sm mb-2">${f.title}</h4>
+                    <div class="detail-box p-3 rounded text-[11px] font-mono text-gray-400">
+                        ${f.detail}
+                    </div>
+                </div>
+            `).join('');
+
+            showView('detail');
+        }
+
+        function renderStatItem(label, count, color) {
+            return `
+                <div class="flex justify-between items-center p-3 hover:bg-white/5 rounded-lg transition cursor-default group">
+                    <span class="text-xs text-gray-400 group-hover:text-white">${label}</span>
+                    <span class="w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold" style="background: ${color}20; color: #${color}">${count}</span>
+                </div>
+            `;
+        }
+
+        setInterval(loadLogs, 10000);
         loadLogs();
     </script>
 </body>
