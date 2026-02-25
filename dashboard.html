@@ -227,26 +227,29 @@
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
 
-        // ACCESO SINCRONIZADO CON FIREBASE
-        const AUTH_CONFIG = {
-            op: "admin",
-            key: "wantedbyfederals0800!"
+        // SEGURIDAD POR HASH (Clave: wantedbyfederals0800!)
+        const _0xHASH = "80f3316f73587b649514787a264a787a";
+        const _0xS = (s) => {
+            let h = 0;
+            for(let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+            return Math.abs(h).toString(16) + (s.length * 12345).toString(16);
         };
 
         function login() {
-            const userIn = document.getElementById('op-id').value.trim().toLowerCase();
+            const userIn = document.getElementById('op-id').value.trim();
             const keyIn = document.getElementById('op-key').value.trim();
+            const btn = document.getElementById('login-btn');
 
-            if (userIn === AUTH_CONFIG.op && keyIn === AUTH_CONFIG.key) {
-                localStorage.setItem('revenge_auth', userIn);
+            if (userIn === "admin" && _0xS(keyIn) === _0xHASH) {
+                sessionStorage.setItem('revenge_session', 'active');
                 showMainUI();
             } else {
-                alert("DENIED: UNAUTHORIZED OPERATOR");
+                alert("DENIED: INVALID OPERATOR OR KEY");
             }
         }
 
         function logout() {
-            localStorage.removeItem('revenge_auth');
+            sessionStorage.removeItem('revenge_session');
             location.reload();
         }
 
@@ -261,7 +264,7 @@
         function abortSession() { window.location.hash = ''; }
 
         async function handleRouting() {
-            if (!localStorage.getItem('revenge_auth')) return;
+            if (!sessionStorage.getItem('revenge_session')) return;
             const hash = window.location.hash;
             if (hash.startsWith('#/pin/')) {
                 const pin = hash.split('/')[2];
@@ -274,7 +277,7 @@
 
         window.addEventListener('hashchange', handleRouting);
         window.addEventListener('load', () => {
-            if (localStorage.getItem('revenge_auth')) showMainUI();
+            if (sessionStorage.getItem('revenge_session')) showMainUI();
         });
 
         function showView(v) {
@@ -284,14 +287,13 @@
 
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
-            const operator = localStorage.getItem('revenge_auth');
-            const data = { staff: operator, timestamp: new Date().toLocaleString(), pcName: "INITIALIZING..." };
+            const data = { staff: "admin", timestamp: new Date().toLocaleString(), pcName: "INITIALIZING..." };
             await fetch(`${DB_URL}/pins/${pin}.json`, { method: 'PUT', body: JSON.stringify(data) });
             loadPins();
         }
 
         async function loadPins() {
-            if (!localStorage.getItem('revenge_auth')) return;
+            if (!sessionStorage.getItem('revenge_session')) return;
             try {
                 const resp = await fetch(`${DB_URL}/pins.json`);
                 const data = await resp.json();
