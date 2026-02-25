@@ -2,116 +2,198 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>REVENGE | Elite System</title>
+    <title>REVENGE | Advanced Threat Hunter</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { background: #010103; color: #f3f4f6; font-family: 'Inter', sans-serif; overflow: hidden; }
-        .glass { background: rgba(15, 15, 20, 0.98); border: 1px solid rgba(255, 255, 255, 0.04); }
-        .sidebar { border-right: 1px solid rgba(255,255,255,0.03); width: 280px; }
-        .btn-generate {
-            background: #ffffff; color: #000; font-weight: 900; font-size: 11px;
-            letter-spacing: 1px; padding: 12px 24px; border-radius: 8px;
-            transition: 0.2s; text-transform: uppercase;
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');
+        
+        :root {
+            --bg-deep: #08080a;
+            --panel-bg: #0d0d10;
+            --accent: #ff4141;
+            --glass-border: rgba(255, 255, 255, 0.05);
         }
-        .btn-generate:hover { background: #8b5cf6; color: #fff; transform: translateY(-2px); }
+
+        body { 
+            background: var(--bg-deep); 
+            color: #e2e8f0; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+        }
+
+        .sidebar { 
+            background: #050507; 
+            border-right: 1px solid var(--glass-border); 
+            width: 260px;
+        }
+
+        /* Modern Glass Card */
+        .glass-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
         .pin-card {
-            background: #060608; border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 16px; transition: 0.2s; cursor: pointer; position: relative;
+            cursor: pointer;
+            position: relative;
             overflow: hidden;
+            background: linear-gradient(145deg, #0d0d10 0%, #0a0a0c 100%);
         }
-        .pin-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
-            background: #8b5cf6; opacity: 0; transition: 0.2s;
+
+        .pin-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(255, 65, 65, 0.2);
         }
-        .pin-card:hover { border-color: rgba(139, 92, 246, 0.4); }
-        .pin-card:hover::before { opacity: 1; }
-        .cat-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 14px; border-radius: 8px; margin-bottom: 4px;
-            font-size: 11px; font-weight: 900; color: #64748b; transition: 0.2s;
-            text-transform: uppercase; letter-spacing: 1px;
+
+        .pin-card::after {
+            content: ''; position: absolute; top: 0; right: 0; 
+            width: 40px; height: 40px;
+            background: linear-gradient(45deg, transparent 50%, rgba(255,65,65,0.1) 50%);
         }
-        .cat-item.active { background: rgba(255,255,255,0.03); color: #fff; }
-        .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; margin-right: 10px; }
-        .finding-card {
-            background: #040406; border: 1px solid rgba(255,255,255,0.02);
-            border-left: 3px solid #ef4444; border-radius: 12px;
+
+        /* Findings UI */
+        .finding-entry {
+            background: #0f0f13;
+            border-left: 4px solid var(--accent);
+            border-radius: 4px 12px 12px 4px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: 0.2s;
         }
-        .badge-instance { background: rgba(239, 68, 68, 0.1); color: #ef4444; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; }
-        .hw-panel { background: #040406; border: 1px solid rgba(255,255,255,0.02); border-radius: 12px; padding: 16px; }
-        .hw-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 8px; font-family: monospace; }
-        .hw-label { color: #64748b; font-weight: bold; }
-        .hw-value { color: #fff; text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .finding-entry:hover {
+            background: #14141a;
+        }
+
+        .status-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge-critical { background: rgba(255, 65, 65, 0.15); color: #ff4141; border: 1px solid rgba(255, 65, 65, 0.3); }
+
+        .hw-label { 
+            font-family: 'JetBrains Mono', monospace;
+            color: #64748b;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .hw-value {
+            color: #fff;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1a1a20; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        .btn-action {
+            font-weight: 900;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
     </style>
 </head>
 <body class="flex h-screen">
 
-    <aside class="sidebar p-8 flex flex-col justify-between">
-        <div>
-            <div class="text-purple-500 font-black italic text-3xl mb-12 tracking-tighter">REVENGE</div>
-            <nav class="space-y-2">
-                <button onclick="showView('list')" class="w-full flex items-center gap-4 p-4 rounded-lg bg-white/5 font-bold text-white transition">
-                    <i class="fa fa-database"></i> Database
-                </button>
-            </nav>
-        </div>
-        <div>
-            <div class="flex items-center gap-2 mb-2">
-                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">System Online</span>
+    <aside class="sidebar p-8 flex flex-col">
+        <div class="flex items-center gap-3 mb-16">
+            <div class="w-10 h-10 bg-red-600 rounded flex items-center justify-center">
+                <i class="fa fa-crosshairs text-white text-xl"></i>
             </div>
-            <div class="text-[9px] text-gray-700 font-bold uppercase tracking-widest">v2.0 Elite Protocol</div>
+            <div>
+                <div class="font-black text-xl tracking-tighter leading-none">REVENGE</div>
+                <div class="text-[9px] text-gray-500 font-bold tracking-[0.2em] uppercase">Security Panel</div>
+            </div>
+        </div>
+        
+        <nav class="flex-1 space-y-2">
+            <button onclick="showView('list')" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl bg-white/5 text-sm font-bold hover:bg-white/10 transition">
+                <i class="fa fa-th-large text-red-500"></i> Active Scans
+            </button>
+        </nav>
+
+        <div class="mt-auto pt-8 border-t border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Network Active</span>
+            </div>
         </div>
     </aside>
 
-    <main class="flex-1 p-12 overflow-y-auto relative">
+    <main class="flex-1 overflow-y-auto p-12">
+        
         <div id="view-list">
-            <div class="flex justify-between items-end mb-12">
+            <div class="flex justify-between items-center mb-12">
                 <div>
-                    <h1 class="text-4xl font-black italic tracking-tight">Active Sessions</h1>
-                    <p class="text-gray-500 text-[10px] mt-2 font-bold uppercase tracking-widest">Global Monitoring Network</p>
+                    <h1 class="text-4xl font-black italic tracking-tight uppercase">Intelligence Database</h1>
+                    <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mt-2">Real-time terminal monitoring</p>
                 </div>
-                <button onclick="generatePIN()" class="btn-generate">Generate Access PIN</button>
+                <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white transform hover:-translate-y-1 shadow-2xl">
+                    Deploy New Instance
+                </button>
             </div>
-            <div id="pins-grid" class="grid grid-cols-4 gap-5"></div>
+            
+            <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                </div>
         </div>
 
         <div id="view-detail" class="hidden">
             <div class="flex justify-between items-center mb-10">
-                <button onclick="showView('list')" class="text-[10px] font-black uppercase text-gray-500 hover:text-white transition flex items-center gap-3">
-                    <i class="fa fa-arrow-left"></i> Return
+                <button onclick="showView('list')" class="flex items-center gap-3 text-xs font-black uppercase text-gray-500 hover:text-white transition">
+                    <i class="fa fa-chevron-left"></i> Abort Session
                 </button>
-                <button id="btn-delete" class="text-red-500 border border-red-500/20 px-6 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition">Purge Data</button>
+                <div class="flex gap-4">
+                    <button id="btn-delete" class="px-6 py-2 border border-red-500/20 text-red-500 rounded-lg text-xs font-black uppercase hover:bg-red-500 hover:text-white transition">Purge Entry</button>
+                </div>
             </div>
 
             <div class="grid grid-cols-12 gap-8">
-                <div class="col-span-3 space-y-6">
-                    <div class="glass p-6 rounded-2xl">
-                        <h3 class="text-[10px] font-black uppercase text-gray-600 mb-6 tracking-widest">Threat Analysis</h3>
-                        <div id="cat-list"></div>
+                <div class="col-span-12 lg:col-span-4 space-y-6">
+                    <div class="glass-card p-8">
+                        <div class="text-[10px] font-black text-red-500 uppercase tracking-[0.2em] mb-4">Hardware Signature</div>
+                        <h2 id="detail-pcname" class="text-3xl font-black mb-8 italic">--</h2>
+                        
+                        <div class="space-y-6">
+                            <div><div class="hw-label mb-1">Operating System</div><div id="hw-os" class="hw-value">--</div></div>
+                            <div><div class="hw-label mb-1">Central Processor</div><div id="hw-cpu" class="hw-value">--</div></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><div class="hw-label mb-1">Memory Pool</div><div id="hw-ram" class="hw-value">--</div></div>
+                                <div><div class="hw-label mb-1">Uptime</div><div id="hw-boot" class="hw-value">--</div></div>
+                            </div>
+                            <div><div class="hw-label mb-1">System Install Date</div><div id="hw-install" class="hw-value">--</div></div>
+                        </div>
                     </div>
 
-                    <div class="glass p-6 rounded-2xl">
-                        <h3 class="text-[10px] font-black uppercase text-gray-600 mb-6 tracking-widest">Hardware Fingerprint</h3>
-                        <div class="hw-panel">
-                            <div class="hw-row"><span class="hw-label">OS:</span><span class="hw-value" id="hw-os">---</span></div>
-                            <div class="hw-row"><span class="hw-label">CPU:</span><span class="hw-value" id="hw-cpu">---</span></div>
-                            <div class="hw-row"><span class="hw-label">RAM:</span><span class="hw-value" id="hw-ram">---</span></div>
-                            <div class="hw-row"><span class="hw-label">UPTIME:</span><span class="hw-value" id="hw-boot">---</span></div>
-                            <div class="hw-row"><span class="hw-label">INSTALL:</span><span class="hw-value" id="hw-install">---</span></div>
-                        </div>
+                    <div class="glass-card p-8">
+                        <div class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">Analysis Stats</div>
+                        <div id="cat-list" class="space-y-3"></div>
                     </div>
                 </div>
 
-                <div class="col-span-9">
+                <div class="col-span-12 lg:col-span-8">
                     <div class="flex items-center justify-between mb-8">
-                        <h2 class="text-2xl font-black italic flex items-center gap-3 tracking-tight">
-                            <i class="fa fa-crosshairs text-purple-500"></i> Scan Findings
-                        </h2>
+                        <h3 class="text-xl font-black uppercase italic tracking-widest flex items-center gap-3">
+                            <span class="w-8 h-[2px] bg-red-600"></span>
+                            Live Findings
+                        </h3>
                     </div>
-                    <div id="findings-grid" class="grid grid-cols-2 gap-5"></div>
+                    <div id="findings-grid">
+                        </div>
                 </div>
             </div>
         </div>
@@ -128,13 +210,14 @@
 
         async function generatePIN() {
             const pin = Math.floor(100000 + Math.random() * 900000).toString();
-            const data = { staff: "System_Auth", timestamp: new Date().toLocaleString() };
+            const data = { staff: "Admin_Deploy", timestamp: new Date().toLocaleString() };
             await fetch(`${DB_URL}/${pin}.json`, { method: 'PUT', body: JSON.stringify(data) });
             loadPins();
         }
 
         async function deleteScan() {
             if(!activePin) return;
+            if(!confirm("ARE YOU SURE YOU WANT TO PURGE THIS INTEL?")) return;
             await fetch(`${DB_URL}/${activePin}.json`, { method: 'DELETE' });
             showView('list');
             loadPins();
@@ -146,16 +229,16 @@
             const resp = await fetch(`${DB_URL}/${pin}.json`);
             const data = await resp.json();
             
+            // Name & Hardware
+            document.getElementById('detail-pcname').innerText = data.pcName || "UNKNOWN_TERMINAL";
             if(data.specs) {
-                document.getElementById('hw-os').innerText = data.specs.os || "Unknown";
-                document.getElementById('hw-cpu').innerText = data.specs.cpu || "Unknown";
-                document.getElementById('hw-ram').innerText = data.specs.ram || "Unknown";
-                document.getElementById('hw-boot').innerText = data.specs.boot || "Unknown";
+                document.getElementById('hw-os').innerText = data.specs.os || "N/A";
+                document.getElementById('hw-cpu').innerText = data.specs.cpu || "N/A";
+                document.getElementById('hw-ram').innerText = data.specs.ram || "N/A";
+                document.getElementById('hw-boot').innerText = data.specs.boot || "N/A";
                 if(data.specs.install && data.specs.install !== "0") {
                     const d = new Date(data.specs.install * 1000);
                     document.getElementById('hw-install').innerText = d.toLocaleDateString();
-                } else {
-                    document.getElementById('hw-install').innerText = "Unknown";
                 }
             }
 
@@ -163,24 +246,27 @@
             const counts = { Critical: 0, Warning: 0, Suspicious: 0 };
             findings.forEach(f => { if(counts[f.category] !== undefined) counts[f.category]++; });
 
-            document.getElementById('cat-list').innerHTML = ["Critical", "Warning", "Suspicious"].map(c => `
-                <div class="cat-item ${counts[c] > 0 ? 'active' : 'opacity-40'}">
-                    <span><span class="dot" style="background: ${c==='Critical'?'#ef4444':'#8b5cf6'}"></span> ${c}</span>
-                    <span class="bg-black/80 px-2 py-1 rounded text-[10px] text-white border border-white/5">${counts[c]}</span>
-                </div>`).join('');
+            document.getElementById('cat-list').innerHTML = Object.keys(counts).map(c => `
+                <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/5">
+                    <span class="text-[10px] font-black uppercase text-gray-400">${c}</span>
+                    <span class="font-bold text-sm ${counts[c] > 0 ? 'text-red-500' : 'text-gray-700'}">${counts[c]}</span>
+                </div>
+            `).join('');
 
             const grid = document.getElementById('findings-grid');
             if (findings.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 text-center text-gray-600 font-bold text-xs py-10 uppercase tracking-widest">No anomalies detected</div>`;
+                grid.innerHTML = `<div class="p-20 text-center glass-card border-dashed opacity-50 font-black text-xs uppercase tracking-[0.3em]">No threats identified in current sweep</div>`;
             } else {
                 grid.innerHTML = findings.map(f => `
-                    <div class="finding-card p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <i class="fa fa-shield-virus text-red-500 text-lg"></i>
-                            <span class="badge-instance uppercase">Integrity</span>
+                    <div class="finding-entry">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="status-badge badge-critical">Boot Instance</span>
+                            <span class="text-[9px] font-mono text-gray-600 uppercase">Detection ID: ${Math.random().toString(16).substr(2, 6)}</span>
                         </div>
-                        <h4 class="font-black text-sm mb-3 uppercase tracking-tight text-white">${f.title}</h4>
-                        <p class="bg-black p-4 rounded-lg border border-white/5 font-mono text-[10px] text-gray-400 leading-relaxed break-words">${f.detail}</p>
+                        <h4 class="text-lg font-black uppercase tracking-tight mb-2">${f.title}</h4>
+                        <div class="bg-black/40 p-4 rounded border border-white/5 font-mono text-[11px] text-gray-400 break-words">
+                            ${f.detail}
+                        </div>
                     </div>`).join('');
             }
             showView('detail');
@@ -192,20 +278,24 @@
             const grid = document.getElementById('pins-grid');
             grid.innerHTML = "";
             for (let pin in data) {
+                const name = data[pin].pcName || "Awaiting Connection...";
                 grid.innerHTML += `
-                    <div onclick="openReport('${pin}')" class="pin-card p-8">
+                    <div onclick="openReport('${pin}')" class="glass-card pin-card p-6">
                         <div class="flex justify-between items-start mb-6">
-                            <div class="text-[10px] font-black text-purple-500 uppercase tracking-widest">ID: #${pin}</div>
-                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                            <span class="text-[10px] font-black text-red-500 tracking-widest font-mono">#${pin}</span>
+                            <div class="flex gap-1">
+                                <div class="w-1 h-1 rounded-full bg-red-500"></div>
+                                <div class="w-1 h-1 rounded-full bg-red-500/30"></div>
+                            </div>
                         </div>
-                        <div class="text-xl font-black italic mb-1 text-white">${data[pin].staff || 'Unverified'}</div>
+                        <h3 class="font-black text-lg mb-1 truncate uppercase italic">${name}</h3>
                         <div class="text-[9px] text-gray-600 font-bold uppercase tracking-widest">${data[pin].timestamp}</div>
                     </div>`;
             }
         }
 
         loadPins();
-        setInterval(loadPins, 8000);
+        setInterval(loadPins, 5000);
     </script>
 </body>
 </html>
