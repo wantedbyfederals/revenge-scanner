@@ -1,176 +1,211 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>REVENGE SCANNER | SYSTEM</title>
+    <title>Revenge Scanner | Login</title>
     <style>
         :root {
-            --bg: #000000;
-            --glass: rgba(255, 255, 255, 0.03);
+            --bg: #020205;
+            --accent: #a855f7;
+            --glass: rgba(15, 15, 20, 0.7);
             --border: rgba(255, 255, 255, 0.1);
-            --accent: #ffffff;
-            --text-secondary: #888888;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: var(--bg);
-            color: #ffffff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            /* Fondo espacial sutil */
-            background-image: 
-                radial-gradient(circle at 50% 50%, #111 0%, #000 100%),
-                url('https://www.transparenttextures.com/patterns/stardust.png');
+            position: relative;
         }
 
-        /* Contenedor Flotante Estilo Atomz */
-        .glass-card {
+        /* FONDO ESPACIAL DECORATIVO */
+        .universe {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 70% 30%, #1a0b2e 0%, #020205 70%);
+        }
+
+        .planet {
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle at 30% 30%, #3b1c71 0%, #000 80%);
+            border-radius: 50%;
+            box-shadow: -20px 20px 100px rgba(168, 85, 247, 0.2), inset 10px -10px 50px rgba(0,0,0,0.9);
+        }
+
+        .glow {
+            position: absolute;
+            top: 20%;
+            right: 15%;
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            filter: blur(150px);
+            opacity: 0.15;
+            border-radius: 50%;
+        }
+
+        /* TARJETA DE LOGIN (GLASSMORPHISM) */
+        .login-card {
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            width: 420px;
-            padding: 50px 40px;
+            border-radius: 28px;
+            width: 400px;
+            padding: 48px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 600;
             margin-bottom: 8px;
             letter-spacing: -0.5px;
         }
 
-        p.subtitle {
-            color: var(--text-secondary);
+        .desc {
+            color: #888;
             font-size: 14px;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
         }
 
-        /* Inputs Modernos y Limpios */
+        /* INPUTS ESTILO APPLE/ATOMZ */
         .input-group {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            margin-left: 4px;
+            margin-bottom: 16px;
+            position: relative;
         }
 
         input {
             width: 100%;
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
-            font-size: 14px;
-            transition: all 0.2s ease;
+            font-size: 15px;
+            transition: 0.2s;
         }
 
         input:focus {
             outline: none;
-            border-color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(168, 85, 247, 0.5);
+            background: rgba(255, 255, 255, 0.06);
         }
 
-        /* Botón Elegante Blanco y Negro */
-        .btn-primary {
+        /* BOTONES */
+        .btn-login {
             width: 100%;
             padding: 16px;
-            background: var(--accent);
-            color: #000;
+            background: linear-gradient(135deg, #8b5cf6, #d8b4fe);
+            color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
+            font-size: 16px;
             font-weight: 600;
-            font-size: 15px;
             cursor: pointer;
             margin-top: 10px;
-            transition: transform 0.2s ease, opacity 0.2s ease;
+            transition: transform 0.2s;
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.2);
         }
 
-        .btn-primary:hover {
-            transform: scale(1.02);
-            opacity: 0.9;
+        .btn-login:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
         }
 
-        /* Animación de fondo (Planeta/Nebulosa sutil) */
-        .orb {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 70%);
-            border-radius: 50%;
-            z-index: -1;
-            top: -200px;
-            right: -200px;
-        }
-
-        .footer-link {
-            margin-top: 30px;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .footer-link span {
-            color: var(--accent);
+        .btn-apple {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            margin-top: 24px;
             cursor: pointer;
-            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
+
+        .divider {
+            margin: 24px 0;
+            display: flex;
+            align-items: center;
+            color: #444;
+            font-size: 12px;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #222;
+            margin: 0 10px;
+        }
+
+        .footer {
+            margin-top: 32px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .footer span { color: var(--accent); cursor: pointer; }
 
     </style>
 </head>
 <body>
 
-    <div class="orb"></div>
+    <div class="universe">
+        <div class="glow"></div>
+        <div class="planet"></div>
+    </div>
 
-    <div class="glass-card">
-        <h1>System Access</h1>
-        <p class="subtitle">Ready for deep network reconnaissance.</p>
-
-        <div class="input-group">
-            <label>Target IP / Range</label>
-            <input type="text" id="targetIp" placeholder="e.g. 192.168.1.1">
-        </div>
+    <div class="login-card">
+        <h1>Welcome Back</h1>
+        <p class="desc">Please login to your account.</p>
 
         <div class="input-group">
-            <label>Port Protocol</label>
-            <input type="text" id="portRange" placeholder="e.g. 80, 443, 3306">
+            <input type="text" placeholder="Username or Email">
         </div>
 
-        <button class="btn-primary" onclick="sendToNative()">Initialize Protocol</button>
-
-        <div class="footer-link">
-            New to Revenge? <span>Sign up</span>
+        <div class="input-group">
+            <input type="password" placeholder="Password">
         </div>
+
+        <button class="btn-login" onclick="login()">Login</button>
+
+        <div class="divider">OR</div>
+
+        <button class="btn-apple">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05 1.72-3.21 1.72-1.13 0-1.53-.71-2.92-.71-1.37 0-1.85.69-2.91.71-1.14.02-2.34-.84-3.32-1.78-2.02-1.92-3.55-5.41-3.55-8.7 0-3.35 1.74-5.12 3.4-5.12 1.1 0 2.02.66 2.76.66.72 0 1.83-.78 3.12-.78 1.25 0 2.89.57 3.86 1.89-2.58 1.48-2.14 4.88.5 6.09-1 2.37-2.34 4.54-3.73 6.02zM12.03 5.31c-.13-1.87 1.43-3.48 3.17-3.31.23 2.11-1.89 3.69-3.17 3.31z"/></svg>
+            Sign in with Apple
+        </button>
+
+        <p class="footer">Don't have an account? <span>Sign up</span></p>
     </div>
 
     <script>
-        function sendToNative() {
-            const ip = document.getElementById('targetIp').value;
-            const ports = document.getElementById('portRange').value;
-
+        function login() {
+            // Comunicación con tu C++ WebView2
             if (window.chrome && window.chrome.webview) {
-                window.chrome.webview.postMessage({
-                    command: "START_SCAN",
-                    target: ip,
-                    range: ports
-                });
-            } else {
-                console.log("Comando enviado:", ip, ports);
-                alert("Protocolo inicializado en consola (Modo Web)");
+                window.chrome.webview.postMessage("TRY_LOGIN");
             }
         }
     </script>
