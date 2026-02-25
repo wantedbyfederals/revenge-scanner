@@ -4,59 +4,218 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Revenge Scanner | Terminal</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: #0d0d0d;
+            --accent: #a855f7;
+            --text-main: #ffffff;
+            --text-dim: #666666;
+            --border: #1a1a1a;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            width: 100%;
+        }
+
+        /* PANEL IZQUIERDO */
+        .sidebar {
+            background: var(--card-bg);
+            border-right: 1px solid var(--border);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        h2 { font-size: 1.8rem; margin: 0 0 10px 0; }
+        p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 30px; }
+
+        .field { margin-bottom: 20px; }
+        label { display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; font-weight: bold; }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--accent);
+            font-family: monospace;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        input:focus { border-color: var(--accent); }
+
+        .btn-scan {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .btn-scan:hover { filter: brightness(1.2); }
+
+        /* PANEL DERECHO */
+        .main-view {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #11081a 0%, #050505 100%);
+        }
+
+        .stats {
+            position: absolute;
+            top: 40px;
+            text-align: center;
+        }
+
+        .stats h3 { font-size: 2.5rem; margin: 0; opacity: 0.9; }
+
+        /* CUBO 3D ANIMADO */
+        .scene { width: 200px; height: 200px; perspective: 600px; }
+        .cube {
+            width: 100%; height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate 20s infinite linear;
+        }
+        .face {
+            position: absolute; width: 200px; height: 200px;
+            border: 1px solid var(--accent);
+            background: rgba(168, 85, 247, 0.05);
+            display: flex; align-items: center; justify-content: center;
+            font-family: monospace; color: var(--accent); font-size: 0.8rem;
+        }
+        .front  { transform: rotateY(  0deg) translateZ(100px); }
+        .right  { transform: rotateY( 90deg) translateZ(100px); }
+        .back   { transform: rotateY(180deg) translateZ(100px); }
+        .left   { transform: rotateY(-90deg) translateZ(100px); }
+        .top    { transform: rotateX( 90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+        @keyframes rotate {
+            from { transform: rotateX(0) rotateY(0); }
+            to { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        #log-output {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 150px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            padding: 15px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #4ade80;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
+
     <div class="container">
-        <section class="login-section">
-            <div class="header">
-                <h1 class="logo"><i class="fas fa-user-secret"></i> Revenge<span>Scanner</span></h1>
+        <aside class="sidebar">
+            <div class="logo">REVENGE_SYSTEM_v1.0</div>
+            <h2>Scanner</h2>
+            <p>Ready for network reconnaissance.</p>
+
+            <div class="field">
+                <label>Target Address</label>
+                <input type="text" id="targetIp" placeholder="127.0.0.1">
             </div>
 
-            <div class="welcome-text">
-                <h2>Terminal Login</h2>
-                <p>Ingresa los parámetros para iniciar el escaneo de red.</p>
-            </div>
-
-            <div class="input-group">
-                <label>Target IP / Range</label>
-                <input type="text" id="target" placeholder="192.168.1.1">
-                
+            <div class="field">
                 <label>Port Range</label>
-                <div class="password-wrapper">
-                    <input type="text" id="ports" placeholder="1-65535">
-                </div>
-                
-                <button class="btn-primary" onclick="startScan()">
-                    <i class="fas fa-terminal"></i> INITIALIZE SCAN
-                </button>
+                <input type="text" id="portRange" placeholder="80, 443, 3306">
             </div>
 
-            <p class="footer-text">Unauthorized access is restricted. <a href="#">System Logs</a></p>
-        </section>
+            <button class="btn-scan" onclick="invokeNativeScan()">Start Execution</button>
+        </aside>
 
-        <section class="visual-section">
-            <div class="stat-overlay">
-                <h3>400K+ Targets. 50M+ Vulnerabilities found.</h3>
-                <button class="btn-join">View Global Stats</button>
+        <main class="main-view">
+            <div class="stats">
+                <h3>VULNERABILITY ENGINE</h3>
+                <p style="color: var(--accent)">ACTIVE SESSIONS: 402,192</p>
             </div>
-            
-            <div class="scanner-visual">
-                <div class="cube-container">
-                    <div class="cube">
-                        <div class="face front">DEBUG</div>
-                        <div class="face back">ROOT</div>
-                        <div class="face right">SCAN</div>
-                        <div class="face left">HASH</div>
-                        <div class="face top">EXE</div>
-                        <div class="face bottom">SQL</div>
-                    </div>
+
+            <div class="scene">
+                <div class="cube">
+                    <div class="face front">CONNECTING...</div>
+                    <div class="face back">BYPASSING</div>
+                    <div class="face right">SCANNING</div>
+                    <div class="face left">ENCRYPTING</div>
+                    <div class="face top">REVENGE</div>
+                    <div class="face bottom">ROOT_ACCESS</div>
                 </div>
-                <div class="scan-ring"></div>
             </div>
-        </section>
+
+            <div id="log-output">
+                [SYSTEM] Waiting for target initialization...
+            </div>
+        </main>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        function invokeNativeScan() {
+            const ip = document.getElementById('targetIp').value;
+            const ports = document.getElementById('portRange').value;
+            
+            appendLog(`[INIT] Starting scan on ${ip}...`);
+
+            if (window.chrome && window.chrome.webview) {
+                window.chrome.webview.postMessage({
+                    command: "START_SCAN",
+                    target: ip,
+                    range: ports
+                });
+            }
+        }
+
+        function appendLog(text) {
+            const log = document.getElementById('log-output');
+            const entry = document.createElement('div');
+            entry.textContent = `> ${text}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Esta función será llamada desde C++
+        function onPortFound(port, status) {
+            appendLog(`[FOUND] Port ${port} is ${status}`);
+        }
+    </script>
 </body>
 </html>
