@@ -2,16 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Revenge Scanner</title>
+    <title>Revenge Scanner | Core</title>
     <style>
         :root {
             --bg: #030305;
             --accent: #a855f7;
             --accent-glow: rgba(168, 85, 247, 0.4);
-            --glass: rgba(10, 10, 15, 0.85);
-            --border: rgba(255, 255, 255, 0.05);
-            --success: #22c55e;
-            --error: #ef4444;
+            --glass: rgba(10, 10, 15, 0.9);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -19,7 +17,7 @@
         body {
             background-color: var(--bg);
             color: white;
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', sans-serif;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -48,37 +46,31 @@
             background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
             border-radius: 50%;
             filter: blur(100px);
-            opacity: 0.3;
-            animation: drift 20s infinite alternate;
+            opacity: 0.2;
+            animation: drift 15s infinite alternate;
         }
 
         @keyframes drift {
-            from { transform: translate(-10%, -10%); }
-            to { transform: translate(10%, 10%); }
-        }
-
-        .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: 0.5s ease-in-out;
+            from { transform: translate(-5%, -5%); }
+            to { transform: translate(5%, 5%); }
         }
 
         .card {
             background: var(--glass);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
+            backdrop-filter: blur(50px);
+            -webkit-backdrop-filter: blur(50px);
             border: 1px solid var(--border);
             border-radius: 40px;
-            width: 440px;
-            padding: 50px;
+            padding: 60px;
             text-align: center;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9);
             z-index: 10;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* LOGIN VIEW */
+        #login-view { width: 440px; }
+        
         h1 { font-size: 32px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 10px; }
         .desc { color: #6b7280; font-size: 14px; margin-bottom: 35px; }
 
@@ -87,7 +79,7 @@
             padding: 18px 22px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border);
-            border-radius: 18px;
+            border-radius: 20px;
             color: white;
             font-size: 15px;
             margin-bottom: 15px;
@@ -102,67 +94,77 @@
 
         .btn-primary {
             width: 100%;
-            padding: 18px;
+            padding: 20px;
             background: white;
             color: black;
             border: none;
-            border-radius: 18px;
+            border-radius: 20px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .btn-primary:hover { transform: scale(1.02); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
 
-        .error-msg {
-            color: var(--error);
-            font-size: 13px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        /* SCANNER SCREEN */
+        /* SCANNER VIEW */
         #scanner-view {
             display: none;
-            width: 900px;
-            height: 600px;
-            flex-direction: column;
-            text-align: left;
-            padding: 40px;
+            width: 700px;
+            opacity: 0;
+            transform: scale(0.9);
         }
 
-        .status-bar {
-            display: flex;
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .stat-card {
-            flex: 1;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            padding: 20px;
-            border-radius: 20px;
-        }
-
-        .stat-card span { display: block; color: #6b7280; font-size: 12px; text-transform: uppercase; }
-        .stat-card p { font-size: 20px; font-weight: 700; margin-top: 5px; color: var(--accent); }
-
-        .terminal {
-            margin-top: 30px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 20px;
-            padding: 20px;
+        .radar-container {
+            position: relative;
+            width: 250px;
             height: 250px;
-            overflow-y: auto;
-            font-family: 'Fira Code', monospace;
-            font-size: 13px;
-            border: 1px solid var(--border);
-            color: #a8a8a8;
+            margin: 0 auto 40px;
         }
 
-        .scan-line { color: var(--success); margin-bottom: 5px; }
+        .radar-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px var(--accent));
+        }
+
+        .radar-beam {
+            transform-origin: center;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .status-item {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .status-item span { display: block; color: #4b5563; font-size: 11px; font-weight: 700; }
+        .status-item p { color: var(--accent); font-weight: 600; font-size: 14px; }
+
+        .deco-text {
+            font-family: monospace;
+            font-size: 10px;
+            color: #374151;
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
 
     </style>
 </head>
@@ -171,47 +173,55 @@
     <div class="drag-region" onmousedown="handleDrag()"></div>
 
     <div class="space-bg">
-        <div class="nebula" style="top: -200px; right: -200px;"></div>
-        <div class="nebula" style="bottom: -200px; left: -200px; background: rgba(59, 130, 246, 0.2);"></div>
+        <div class="nebula" style="top: -100px; right: -100px;"></div>
+        <div class="nebula" style="bottom: -100px; left: -100px; background: rgba(59, 130, 246, 0.15);"></div>
     </div>
 
-    <div id="login-view" class="container">
-        <div class="card">
-            <h1>Revenge Login</h1>
-            <p class="desc">Enter credentials to unlock scanner.</p>
-            <input type="text" id="user" placeholder="Username">
-            <input type="password" id="pass" placeholder="Password">
-            <button class="btn-primary" onclick="validateLogin()">Access System</button>
-            <p id="err" class="error-msg">Invalid credentials. Access denied.</p>
-        </div>
+    <div id="login-view" class="card">
+        <h1>Revenge Login</h1>
+        <p class="desc">Encrypted Access Required</p>
+        <input type="text" id="user" placeholder="Username">
+        <input type="password" id="pass" placeholder="Password">
+        <button class="btn-primary" onclick="validateLogin()">Unlock System</button>
     </div>
 
-    <div id="scanner-view" class="container card">
-        <div style="width: 100%;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h1>Scanner Dashboard</h1>
-                <button class="btn-primary" style="width: auto; padding: 10px 30px;" onclick="startScan()">Start Scan</button>
-            </div>
-            
-            <div class="status-bar">
-                <div class="stat-card">
-                    <span>Target IP</span>
-                    <p id="target-ip">0.0.0.0</p>
-                </div>
-                <div class="stat-card">
-                    <span>Security Level</span>
-                    <p>ULTRA</p>
-                </div>
-                <div class="stat-card">
-                    <span>System Status</span>
-                    <p style="color: var(--success)">READY</p>
-                </div>
-            </div>
+    <div id="scanner-view" class="card">
+        <div class="radar-container">
+            <svg class="radar-svg" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="98" fill="none" stroke="rgba(168, 85, 247, 0.2)" stroke-width="1"/>
+                <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(168, 85, 247, 0.2)" stroke-width="1"/>
+                <circle cx="100" cy="100" r="40" fill="none" stroke="rgba(168, 85, 247, 0.2)" stroke-width="1"/>
+                <line x1="100" y1="0" x2="100" y2="200" stroke="rgba(168, 85, 247, 0.1)"/>
+                <line x1="0" y1="100" x2="200" y2="100" stroke="rgba(168, 85, 247, 0.1)"/>
+                <g class="radar-beam">
+                    <path d="M 100 100 L 100 0 A 100 100 0 0 1 180 40 Z" fill="url(#grad)"/>
+                </g>
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:rgba(168, 85, 247, 0.5);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:rgba(168, 85, 247, 0);stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
 
-            <div class="terminal" id="console">
-                <div>[SYSTEM] Waiting for command...</div>
+        <h1>Network Analyzer</h1>
+        <p class="desc">System ready for deep packet inspection.</p>
+
+        <div class="status-grid">
+            <div class="status-item">
+                <span>ENCRYPTION</span>
+                <p>AES-256 ACTIVE</p>
+            </div>
+            <div class="status-item">
+                <span>IDENTITY</span>
+                <p>WANTEDBYFEDERALS</p>
             </div>
         </div>
+
+        <button class="btn-primary" onclick="startScan()">Initialise Scan</button>
+        
+        <p class="deco-text">CORE.SYSTEM.V2 // REV-0800</p>
     </div>
 
     <script>
@@ -224,31 +234,27 @@
         function validateLogin() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
-            const err = document.getElementById('err');
 
             if (u === "wantedbyfederals" && p === "revenge0800!") {
-                document.getElementById('login-view').style.opacity = "0";
+                const login = document.getElementById('login-view');
+                const scanner = document.getElementById('scanner-view');
+
+                login.style.opacity = "0";
+                login.style.transform = "translateY(20px)";
+                
                 setTimeout(() => {
-                    document.getElementById('login-view').style.display = "none";
-                    document.getElementById('scanner-view').style.display = "flex";
-                }, 500);
-            } else {
-                err.style.display = "block";
-                setTimeout(() => { err.style.display = "none"; }, 3000);
+                    login.style.display = "none";
+                    scanner.style.display = "block";
+                    setTimeout(() => {
+                        scanner.style.opacity = "1";
+                        scanner.style.transform = "scale(1)";
+                    }, 50);
+                }, 600);
             }
         }
 
         function startScan() {
-            const consoleBox = document.getElementById('console');
-            consoleBox.innerHTML += `<div class="scan-line">[SCAN] Initializing Revenge Engine...</div>`;
-            
-            let ports = [80, 443, 21, 22, 3389, 8080];
-            ports.forEach((port, i) => {
-                setTimeout(() => {
-                    consoleBox.innerHTML += `<div>[INFO] Testing port ${port}... <span style="color:var(--success)">OPEN</span></div>`;
-                    consoleBox.scrollTop = consoleBox.scrollHeight;
-                }, (i + 1) * 600);
-            });
+            alert("Scan Iniciado en C++");
         }
     </script>
 </body>
