@@ -5,11 +5,11 @@
     <title>Revenge Scanner | Core</title>
     <style>
         :root {
-            --bg: #030305;
+            --bg: #020204;
             --accent: #a855f7;
-            --accent-glow: rgba(168, 85, 247, 0.4);
-            --glass: rgba(10, 10, 15, 0.9);
-            --border: rgba(255, 255, 255, 0.08);
+            --accent-glow: rgba(168, 85, 247, 0.3);
+            --glass: rgba(8, 8, 12, 0.95);
+            --border: rgba(168, 85, 247, 0.15);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -26,7 +26,6 @@
             position: relative;
         }
 
-        /* FONDO MEJORADO */
         .drag-region {
             position: absolute;
             top: 0; left: 0; width: 100%;
@@ -34,206 +33,209 @@
             z-index: 9999;
         }
 
+        .noise {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
         .space-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
-            background: 
-                radial-gradient(circle at 50% 50%, #11081d 0%, #030305 100%),
-                linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(168, 85, 247, 0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background: radial-gradient(circle at 50% 50%, #0d0616 0%, #020204 100%);
         }
 
-        /* Estrellas decorativas */
-        .stars {
+        .grid {
             position: absolute;
-            width: 2px; height: 2px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 10vw 20vh 2px white, 50vw 40vh 1px white, 80vw 10vh 2px white, 20vw 80vh 1px white, 70vw 70vh 2px white;
-            animation: twinkle 5s infinite;
+            width: 200%; height: 200%;
+            background-image: 
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 60px 60px;
+            transform: perspective(500px) rotateX(60deg) translateY(-10%);
+            opacity: 0.2;
+            animation: moveGrid 20s linear infinite;
         }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
+        @keyframes moveGrid {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(60px); }
         }
 
         .nebula {
             position: absolute;
-            width: 800px; height: 800px;
+            width: 1000px; height: 1000px;
             background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.15;
-            animation: drift 15s infinite alternate;
+            filter: blur(80px);
+            opacity: 0.2;
+            animation: drift 20s infinite alternate;
         }
 
         @keyframes drift {
-            from { transform: translate(-5%, -5%); }
-            to { transform: translate(5%, 5%); }
+            from { transform: translate(-10%, -10%) scale(1); }
+            to { transform: translate(10%, 10%) scale(1.2); }
         }
 
-        /* CARDS */
+        .hud-corner {
+            position: absolute;
+            width: 100px; height: 100px;
+            border: 1px solid var(--border);
+            z-index: 1;
+            opacity: 0.5;
+        }
+        .top-left { top: 40px; left: 40px; border-right: none; border-bottom: none; }
+        .top-right { top: 40px; right: 40px; border-left: none; border-bottom: none; }
+        .bottom-left { bottom: 40px; left: 40px; border-right: none; border-top: none; }
+        .bottom-right { bottom: 40px; right: 40px; border-left: none; border-top: none; }
+
+        .data-stream {
+            position: absolute;
+            font-family: monospace;
+            font-size: 10px;
+            color: var(--accent);
+            opacity: 0.1;
+            white-space: nowrap;
+            writing-mode: vertical-rl;
+            top: 0;
+            animation: fall 10s linear infinite;
+        }
+
+        @keyframes fall {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(100vh); }
+        }
+
         .card {
             background: var(--glass);
-            backdrop-filter: blur(50px);
-            -webkit-backdrop-filter: blur(50px);
-            border: 1px solid var(--border);
-            border-radius: 40px;
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 30px;
             padding: 60px;
             text-align: center;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.9);
+            box-shadow: 0 0 50px rgba(0,0,0,1), inset 0 0 20px rgba(168, 85, 247, 0.05);
             z-index: 10;
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
-        #login-view { width: 440px; }
-        h1 { font-size: 32px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 10px; }
-        .desc { color: #6b7280; font-size: 14px; margin-bottom: 35px; }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px; right: -1px; bottom: -1px;
+            border-radius: 30px;
+            background: linear-gradient(45deg, transparent, var(--border), transparent);
+            z-index: -1;
+        }
+
+        #login-view { width: 420px; }
+        h1 { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; text-transform: uppercase; }
+        .desc { color: #4b5563; font-size: 12px; margin-bottom: 35px; letter-spacing: 1px; }
 
         input {
             width: 100%;
-            padding: 18px 22px;
-            background: rgba(255, 255, 255, 0.02);
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border);
-            border-radius: 20px;
+            border-radius: 12px;
             color: white;
-            font-size: 15px;
+            font-size: 14px;
             margin-bottom: 15px;
             transition: 0.3s;
         }
 
-        input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
+        input:focus { outline: none; border-color: var(--accent); background: rgba(168, 85, 247, 0.05); }
 
         .btn-primary {
             width: 100%;
-            padding: 20px;
-            background: white;
-            color: black;
+            padding: 18px;
+            background: var(--accent);
+            color: white;
             border: none;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 900;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
             cursor: pointer;
             transition: 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
+        .btn-primary:hover { transform: scale(1.02); filter: brightness(1.2); }
 
-        /* SCANNER VIEW */
-        #scanner-view {
-            display: none;
-            width: 600px;
-            opacity: 0;
-            transform: scale(0.9);
-        }
+        /* SCANNER SPECIFIC */
+        #scanner-view { display: none; width: 650px; opacity: 0; transform: scale(0.95); }
 
         .radar-container {
-            position: relative;
-            width: 180px;
-            height: 180px;
+            width: 200px; height: 200px;
             margin: 0 auto 30px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+            padding: 10px;
+            border: 1px double var(--border);
         }
 
-        .radar-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 10px var(--accent)); }
-        .radar-beam { transform-origin: center; animation: rotate 4s linear infinite; }
+        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .status-item { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: left; }
+        .status-item span { display: block; color: #4b5563; font-size: 9px; font-weight: 800; }
+        .status-item p { color: var(--accent); font-weight: 700; font-size: 13px; margin-top: 4px; }
 
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #scan-progress-area { display: none; margin-top: 20px; }
+        .progress-container { width: 100%; height: 6px; background: #000; border-radius: 10px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border); }
+        .progress-fill { height: 100%; width: 0%; background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        .scan-status-text { font-family: monospace; font-size: 10px; color: var(--accent); display: flex; justify-content: space-between; }
 
-        .status-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .status-item {
-            background: rgba(255,255,255,0.02);
-            padding: 12px;
-            border-radius: 15px;
-            border: 1px solid var(--border);
-            text-align: left;
-        }
-
-        .status-item span { display: block; color: #4b5563; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-        .status-item p { color: var(--accent); font-weight: 600; font-size: 13px; }
-
-        /* PROGRESS BAR AREA */
-        #scan-progress-area {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .progress-container {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 10px;
-            border: 1px solid rgba(168, 85, 247, 0.2);
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--accent), #d8b4fe);
-            box-shadow: 0 0 15px var(--accent);
-            transition: width 0.1s linear;
-        }
-
-        .scan-status-text {
-            font-family: monospace;
-            font-size: 11px;
-            color: var(--accent);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .deco-text {
-            font-family: monospace;
-            font-size: 10px;
-            color: #374151;
-            margin-top: 30px;
-            letter-spacing: 2px;
-        }
+        .deco-text { font-family: monospace; font-size: 9px; color: #374151; margin-top: 30px; letter-spacing: 3px; }
     </style>
 </head>
 <body>
 
     <div class="drag-region" onmousedown="handleDrag()"></div>
+    <div class="noise"></div>
+    <div class="scanlines"></div>
+
+    <div class="hud-corner top-left"></div>
+    <div class="hud-corner top-right"></div>
+    <div class="hud-corner bottom-left"></div>
+    <div class="hud-corner bottom-right"></div>
+
+    <div class="data-stream" style="left: 10vw; animation-duration: 15s;">REVENGE_LOG_SCAN_INIT_MODULE_X86_64</div>
+    <div class="data-stream" style="right: 15vw; animation-duration: 12s;">ANTIBYPASS_ENABLED_SECURE_BOOT_V3</div>
 
     <div class="space-bg">
-        <div class="stars"></div>
-        <div class="nebula" style="top: -100px; right: -100px;"></div>
-        <div class="nebula" style="bottom: -100px; left: -100px; background: rgba(59, 130, 246, 0.15);"></div>
+        <div class="grid"></div>
+        <div class="nebula" style="top: -200px; right: -200px;"></div>
+        <div class="nebula" style="bottom: -200px; left: -200px; background: rgba(59, 130, 246, 0.1);"></div>
     </div>
 
     <div id="login-view" class="card">
         <h1>Revenge Login</h1>
-        <p class="desc">Login for access to te scanner</p>
+        <p class="desc">Encrypted Access Required</p>
         <input type="text" id="user" placeholder="Username">
         <input type="password" id="pass" placeholder="Password">
-        <button class="btn-primary" onclick="validateLogin()">Log in</button>
+        <button class="btn-primary" onclick="validateLogin()">Authorize</button>
     </div>
 
     <div id="scanner-view" class="card">
         <div class="radar-container">
-            <svg class="radar-svg" viewBox="0 0 200 200">
-                <circle cx="100" cy="100" r="98" fill="none" stroke="rgba(168, 85, 247, 0.1)" stroke-width="1"/>
-                <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(168, 85, 247, 0.1)" stroke-width="1"/>
-                <line x1="100" y1="0" x2="100" y2="200" stroke="rgba(168, 85, 247, 0.05)"/>
-                <line x1="0" y1="100" x2="200" y2="100" stroke="rgba(168, 85, 247, 0.05)"/>
-                <g class="radar-beam">
-                    <path d="M 100 100 L 100 0 A 100 100 0 0 1 180 40 Z" fill="url(#grad)"/>
+            <svg viewBox="0 0 200 200" style="filter: drop-shadow(0 0 5px var(--accent));">
+                <circle cx="100" cy="100" r="90" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <circle cx="100" cy="100" r="60" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <g style="transform-origin: 100px 100px; animation: rotate 4s linear infinite;">
+                    <path d="M 100 100 L 100 10 A 90 90 0 0 1 190 100 Z" fill="url(#grad)"/>
                 </g>
                 <defs>
                     <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -250,7 +252,7 @@
         <div class="status-grid">
             <div class="status-item">
                 <span>VERSION</span>
-                <p>1.2.0</p>
+                <p>1.2.0-STABLE</p>
             </div>
             <div class="status-item">
                 <span>IDENTITY</span>
@@ -265,7 +267,7 @@
                 <div id="progress-bar" class="progress-fill"></div>
             </div>
             <div class="scan-status-text">
-                <span id="scan-label">ANALYZING MEMORY...</span>
+                <span id="scan-label">INITIALIZING...</span>
                 <span id="scan-percentage">0%</span>
             </div>
         </div>
@@ -289,7 +291,7 @@
                 const scanner = document.getElementById('scanner-view');
 
                 login.style.opacity = "0";
-                login.style.transform = "translateY(20px)";
+                login.style.transform = "translateY(20px) scale(0.9)";
                 
                 setTimeout(() => {
                     login.style.display = "none";
@@ -313,25 +315,21 @@
             progressArea.style.display = "block";
 
             let width = 0;
-            const states = ["ANALYZING STRINGS...", "CHECKING MODULES...", "SCANNING MEMORY...", "VERIFYING HANDLES...", "CLEANING CACHE..."];
+            const states = ["MAPPING MEMORY...", "SCANNING STRINGS...", "CHECKING MODULES...", "CLEANING HANDLES...", "SCAN COMPLETED"];
             
             const interval = setInterval(() => {
                 if (width >= 100) {
                     clearInterval(interval);
-                    label.innerText = "SCAN COMPLETED";
-                    label.style.color = "#22c55e";
-                    bar.style.background = "#22c55e";
-                    bar.style.boxShadow = "0 0 15px #22c55e";
+                    label.innerText = "NO THREATS DETECTED";
+                    label.style.color = "#4ade80";
+                    bar.style.background = "#4ade80";
                 } else {
                     width++;
                     bar.style.width = width + "%";
                     perc.innerText = width + "%";
-                    
-                    if(width % 20 === 0) {
-                        label.innerText = states[Math.floor(width/25)];
-                    }
+                    if(width % 25 === 0) label.innerText = states[width/25 - 1];
                 }
-            }, 50); // Velocidad de carga
+            }, 60);
         }
     </script>
 </body>
