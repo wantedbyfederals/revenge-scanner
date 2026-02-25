@@ -224,7 +224,6 @@
     </main>
 
     <script>
-        // REPARACIÓN DE LÓGICA - MANTENIENDO ESTRUCTURA ORIGINAL
         const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
         let activePin = null;
 
@@ -239,16 +238,11 @@
             btn.disabled = true;
 
             try {
-                // REPARACIÓN: Fetch directo con validación forzada de JSON
-                const response = await fetch(`${DB_URL}/operators.json`, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                const operators = await response.json();
+                // REPARACIÓN DEFINITIVA: Petición directa al nodo del usuario
+                const response = await fetch(`${DB_URL}/operators/${userIn}.json`);
+                const data = await response.json();
 
-                if (operators && operators[userIn] && operators[userIn].key === keyIn) {
+                if (data && data.key === keyIn) {
                     localStorage.setItem('revenge_auth', userIn);
                     showMainUI();
                 } else {
@@ -257,8 +251,8 @@
                     btn.disabled = false;
                 }
             } catch (error) {
-                console.error(error);
-                alert("CONNECTION ERROR: DATABASE OFFLINE");
+                console.error("Auth Failure:", error);
+                alert("CONNECTION ERROR: Database is not responding.");
                 btn.innerText = "Establish Connection";
                 btn.disabled = false;
             }
