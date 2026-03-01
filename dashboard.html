@@ -237,19 +237,22 @@ background: rgba(255, 65, 65, 0.05);
 </div>
 <div class="flex items-center gap-4">
 <div class="relative group">
-  <div class="absolute inset-0 bg-gradient-to-r from-red-600/20 to-purple-600/20 rounded-xl blur-sm group-hover:blur-md transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
-  <div class="relative flex items-center bg-black/60 border border-white/10 rounded-xl overflow-hidden hover:border-red-500/50 transition-all duration-300 shadow-lg hover:shadow-red-500/10">
-    <div class="pl-4 pr-2">
-      <i class="fa fa-search text-gray-500 text-xs group-hover:text-red-500 transition-colors duration-300"></i>
+  <div class="absolute -inset-0.5 bg-gradient-to-r from-red-600/30 via-red-500/20 to-purple-600/30 rounded-xl blur-sm"></div>
+  <div class="relative flex items-center bg-black/90 border border-red-500/30 rounded-xl overflow-hidden group hover:border-red-500/60 transition-all duration-300 shadow-lg shadow-red-500/20">
+    <div class="pl-4 pr-3 border-r border-red-500/20">
+      <div class="w-5 h-5 flex items-center justify-center">
+        <i class="fa fa-search text-red-400 text-xs group-hover:text-red-300 transition-colors duration-300"></i>
+      </div>
     </div>
     <input type="text" id="scan-search" onkeyup="filterPins()" placeholder="SEARCH PC, PIN OR DATE..." 
-    class="flex-1 bg-transparent py-4 pr-4 text-[10px] font-mono outline-none text-white placeholder-gray-600 group-hover:placeholder-gray-500 transition-colors duration-300">
-    <div class="px-3 py-2 border-l border-white/10">
-      <div class="w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-purple-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-0 group-hover:scale-100">
-        <i class="fa fa-arrow-right text-white text-[8px]"></i>
+    class="flex-1 bg-transparent py-4 px-4 text-[10px] font-mono outline-none text-white placeholder-red-400/60 group-hover:placeholder-red-400/80 transition-all duration-300">
+    <div class="px-3 py-2 border-l border-red-500/20 bg-gradient-to-r from-red-600/10 to-purple-600/10">
+      <div class="w-6 h-6 rounded-full bg-gradient-to-r from-red-500/80 to-purple-500/80 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+        <i class="fa fa-terminal text-white text-[8px]"></i>
       </div>
     </div>
   </div>
+  <div class="absolute -bottom-0.5 left-4 right-4 h-px bg-gradient-to-r from-red-500/30 via-red-500/60 to-purple-500/30"></div>
 </div>
 <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white shadow-2xl">
 GENERATE PIN
