@@ -237,27 +237,23 @@ background: rgba(255, 65, 65, 0.05);
 </div>
 <div class="flex items-center gap-4">
 <div class="relative group">
-  <div class="absolute inset-0 border border-red-500/20 rounded-xl overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-red-500/5 to-transparent h-[2px] top-1/2 -translate-y-1/2 group-hover:translate-y-full transition-transform duration-1000"></div>
-  </div>
-  <div class="relative flex items-center bg-black/95 border border-red-500/30 rounded-xl overflow-hidden group hover:border-red-500/50 transition-all duration-300">
-    <div class="pl-4 pr-3">
+  <div class="relative flex items-center bg-black/95 border border-red-500/20 rounded-xl overflow-hidden group hover:border-red-500/40 transition-all duration-300">
+    <div class="absolute inset-0 bg-gradient-to-r from-red-500/5 via-transparent to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div class="pl-4 pr-3 relative z-10">
       <div class="w-5 h-5 flex items-center justify-center">
-        <i class="fa fa-radar text-red-500 text-xs group-hover:animate-pulse"></i>
+        <i class="fa fa-satellite-dish text-red-500 text-xs group-hover:rotate-45 transition-transform duration-300"></i>
       </div>
     </div>
-    <input type="text" id="scan-search" onkeyup="filterPins()" placeholder="INITIATE SCAN PROTOCOL..." 
-    class="flex-1 bg-transparent py-4 px-4 text-[10px] font-mono outline-none text-white placeholder-red-500/40 group-hover:placeholder-red-500/60 transition-all duration-300">
-    <div class="px-4 py-3 border-l border-red-500/20">
-      <div class="flex items-center gap-2">
-        <div class="w-1.5 h-1.5 rounded-full bg-red-500 group-hover:animate-ping"></div>
-        <div class="w-1.5 h-1.5 rounded-full bg-red-500 group-hover:animate-ping animation-delay-200"></div>
-        <div class="w-1.5 h-1.5 rounded-full bg-red-500 group-hover:animate-ping animation-delay-400"></div>
+    <input type="text" id="scan-search" onkeyup="filterPins()" placeholder="DEPLOY SEARCH VECTOR..." 
+    class="flex-1 bg-transparent py-4 px-4 text-[10px] font-mono outline-none text-white placeholder-red-500/30 group-hover:placeholder-red-500/50 transition-all duration-300 relative z-10">
+    <div class="px-4 py-3 border-l border-red-500/20 relative z-10">
+      <div class="flex items-center gap-1.5">
+        <div class="w-1 h-4 bg-red-500/30 rounded-full group-hover:bg-red-500 transition-colors duration-300"></div>
+        <div class="w-1 h-4 bg-red-500/30 rounded-full group-hover:bg-red-500 transition-colors duration-300 animation-delay-100"></div>
+        <div class="w-1 h-4 bg-red-500/30 rounded-full group-hover:bg-red-500 transition-colors duration-300 animation-delay-200"></div>
       </div>
     </div>
   </div>
-  <div class="absolute -top-2 left-6 right-6 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-  <div class="absolute -bottom-2 left-6 right-6 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 </div>
 <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white shadow-2xl">
 GENERATE PIN
