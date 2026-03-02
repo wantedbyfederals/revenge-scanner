@@ -450,18 +450,18 @@ unsigned: currentFindings.filter(f => f.category === 'Unsigned Files').length
 let resultStatus = "LEGIT";
 let resultColor = "text-green-500";
 let resultBg = "bg-green-500/10";
-let resultIcon = "fa-check-circle";
+let resultIcon = "fa-shield-virus";
 
 if (counts.critical > 0) {
     resultStatus = "CHEATING";
     resultColor = "text-red-500";
     resultBg = "bg-red-500/10";
-    resultIcon = "fa-times-circle";
+    resultIcon = "fa-shield-virus";
 } else if (counts.warning > 0 || counts.suspicious > 0 || counts.unsigned > 0) {
     resultStatus = "SUSPICIOUS";
     resultColor = "text-orange-500";
     resultBg = "bg-orange-500/10";
-    resultIcon = "fa-exclamation-triangle";
+    resultIcon = "fa-shield-virus";
 }
 
 let scanDate = data.timestamp ? data.timestamp.split(',')[0] : '--';
