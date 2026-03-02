@@ -177,6 +177,22 @@ z-index: 9999;
 .table-row-hover:hover {
 background: rgba(255, 65, 65, 0.05);
 }
+
+/* Account entry styles */
+.account-entry-discord {
+border-left: 3px solid #3b82f6;
+background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+}
+
+.account-entry-steam {
+border-left: 3px solid #6b7280;
+background: linear-gradient(90deg, rgba(107, 114, 128, 0.05) 0%, transparent 100%);
+}
+
+.account-entry-default {
+border-left: 3px solid #a855f7;
+background: linear-gradient(90deg, rgba(168, 85, 247, 0.05) 0%, transparent 100%);
+}
 </style>
 </head>
 
@@ -413,6 +429,101 @@ container.innerHTML = filtered.map(f => {
 }).join('');
 }
 
+function renderAccounts(accounts) {
+    const container = document.getElementById('accounts-grid');
+    
+    if (!accounts || accounts.length === 0) {
+        container.innerHTML = `
+        <div class="col-span-full py-8 flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-white/5 rounded-2xl">
+        <i class="fa fa-user-slash text-4xl mb-4"></i>
+        <span class="text-sm font-black uppercase italic tracking-[0.3em]">No accounts detected</span>
+        </div>`;
+        return;
+    }
+
+    container.innerHTML = accounts.map(acc => {
+        let platformIcon = '';
+        let platformColor = '';
+        let platformBg = '';
+        let entryClass = '';
+        
+        if (acc.platform.toLowerCase().includes('discord')) {
+            platformIcon = 'fa-discord';
+            platformColor = 'text-blue-500';
+            platformBg = 'bg-blue-500/10';
+            entryClass = 'account-entry-discord';
+        } else if (acc.platform.toLowerCase().includes('steam')) {
+            platformIcon = 'fa-steam-symbol';
+            platformColor = 'text-gray-400';
+            platformBg = 'bg-gray-500/10';
+            entryClass = 'account-entry-steam';
+        } else {
+            platformIcon = 'fa-user';
+            platformColor = 'text-purple-500';
+            platformBg = 'bg-purple-500/10';
+            entryClass = 'account-entry-default';
+        }
+
+        const statusIcon = acc.isActive ? 
+            '<i class="fa fa-circle text-green-500 text-[8px] animate-pulse"></i>' : 
+            '<i class="fa fa-circle text-gray-600 text-[8px]"></i>';
+        
+        const statusText = acc.isActive ? 'Active' : 'Inactive';
+        const statusColor = acc.isActive ? 'text-green-500' : 'text-gray-600';
+
+        return `
+        <div class="finding-entry ${entryClass}">
+            <div class="flex justify-between items-start mb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full ${platformBg} flex items-center justify-center">
+                        <i class="fab ${platformIcon} ${platformColor} text-[10px]"></i>
+                    </div>
+                    <h4 class="text-[11px] font-black uppercase tracking-tight text-white">${acc.platform}</h4>
+                    <div class="flex items-center gap-1">
+                        ${statusIcon}
+                        <span class="text-[8px] ${statusColor} font-black uppercase">${statusText}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-[9px] text-gray-500 font-mono uppercase">Username:</span>
+                    <span class="text-[10px] text-white font-mono font-bold">${acc.username || 'Unknown'}</span>
+                </div>
+                
+                ${acc.displayName && acc.displayName !== acc.username ? `
+                <div class="flex items-center gap-2">
+                    <span class="text-[9px] text-gray-500 font-mono uppercase">Display:</span>
+                    <span class="text-[10px] text-gray-300 font-mono">${acc.displayName}</span>
+                </div>
+                ` : ''}
+                
+                ${acc.userId ? `
+                <div class="flex items-center gap-2">
+                    <span class="text-[9px] text-gray-500 font-mono uppercase">ID:</span>
+                    <span class="text-[10px] text-gray-400 font-mono break-all">${acc.userId}</span>
+                </div>
+                ` : ''}
+                
+                ${acc.email && acc.email !== 'Unknown' ? `
+                <div class="flex items-center gap-2">
+                    <span class="text-[9px] text-gray-500 font-mono uppercase">Email:</span>
+                    <span class="text-[10px] text-gray-400 font-mono break-all">${acc.email}</span>
+                </div>
+                ` : ''}
+                
+                ${acc.lastLogin && acc.lastLogin !== 'Unknown' ? `
+                <div class="flex items-center gap-2">
+                    <span class="text-[9px] text-gray-500 font-mono uppercase">Last:</span>
+                    <span class="text-[10px] text-gray-400 font-mono">${acc.lastLogin}</span>
+                </div>
+                ` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
 function filterRecentTable() {
 const input = document.getElementById('recent-search');
 const filter = input.value.toUpperCase();
@@ -439,6 +550,7 @@ if (!data) { abortSession(); return; }
 const specs = data.specs || {};
 currentFindings = data.findings?.findings || [];
 const recentData = data.recentActivity || [];
+const accountsData = data.accounts || [];
 
 const counts = {
 critical: currentFindings.filter(f => !f.category || f.category === 'Critical').length,
@@ -577,6 +689,16 @@ document.getElementById('report-content').innerHTML = `
 </div>
 </div>
 
+<!-- ACCOUNTS DETECTION SECTION -->
+<div class="glass-card p-6 border border-white/5">
+<div class="hw-label mb-6 text-gray-400 font-black tracking-widest">ACCOUNT DETECTION</div>
+<div id="accounts-container" class="space-y-4">
+<div id="accounts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Accounts will be populated here -->
+</div>
+</div>
+</div>
+
 <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
 <div class="w-full">
 <h3 class="text-xl font-black uppercase italic mb-6 flex items-center gap-3 text-white">
@@ -654,6 +776,7 @@ ${recentData.length > 0 ? recentData.sort((a, b) => new Date(b.lastRun) - new Da
 `;
 
 renderFindings('Critical');
+renderAccounts(accountsData);
 
 document.getElementById('view-list').classList.add('hidden');
 document.getElementById('view-detail').classList.remove('hidden');
