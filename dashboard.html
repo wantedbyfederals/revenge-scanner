@@ -2072,16 +2072,26 @@ toggleText.textContent = 'User Mode';
 let scansChart = null;
 let detectionChart = null;
 
-function initializeCharts() {
+async function initializeCharts() {
+try {
+// Fetch real data from Firebase
+const pinsResponse = await fetch(`${DB_URL}/pins.json`);
+const pinsData = await pinsResponse.json();
+const pins = pinsData ? Object.values(pinsData) : [];
+
+// Process data for charts
+const monthlyData = processMonthlyData(pins);
+const detectionData = processDetectionData(pins);
+
 // Scans Overview Chart (Line Chart)
 const scansCtx = document.getElementById('scansChart').getContext('2d');
 scansChart = new Chart(scansCtx, {
 type: 'line',
 data: {
-labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+labels: monthlyData.labels,
 datasets: [{
 label: 'Total Scans',
-data: [1200, 1900, 3000, 5000, 4200, 3800, 4500, 5200, 4800, 5500, 6200, 5800],
+data: monthlyData.totalScans,
 borderColor: '#ff4141',
 backgroundColor: 'rgba(255, 65, 65, 0.1)',
 borderWidth: 3,
@@ -2094,7 +2104,7 @@ pointRadius: 6,
 pointHoverRadius: 8
 }, {
 label: 'Cheating Detected',
-data: [200, 300, 450, 800, 650, 520, 680, 820, 750, 880, 950, 890],
+data: monthlyData.cheatingScans,
 borderColor: '#ef4444',
 backgroundColor: 'rgba(239, 68, 68, 0.1)',
 borderWidth: 2,
@@ -2174,7 +2184,7 @@ type: 'doughnut',
 data: {
 labels: ['Legit Users', 'Cheating', 'Suspicious', 'Pending'],
 datasets: [{
-data: [65, 20, 10, 5],
+data: [detectionData.legit, detectionData.cheating, detectionData.suspicious, detectionData.pending],
 backgroundColor: [
 '#22c55e',
 '#ef4444',
@@ -2217,18 +2227,135 @@ usePointStyle: true
 }
 }
 });
+
+} catch (error) {
+console.error('Error loading chart data:', error);
+// Show error message in charts
+showChartError();
+}
 }
 
-// Update metrics with animation
-function updateMetrics() {
-const metrics = {
-totalScans: 5832,
-legitScans: 3791,
-cheatingScans: 1166,
-suspiciousScans: 583,
-avgScanTime: '2.4s',
-successRate: '94.2%'
+function processMonthlyData(pins) {
+const monthlyData = {
+labels: [],
+totalScans: [],
+cheatingScans: []
 };
+
+// Get last 12 months
+const now = new Date();
+for (let i = 11; i >= 0; i--) {
+const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+const monthLabel = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+monthlyData.labels.push(monthLabel);
+
+// Count scans for this month
+let monthTotal = 0;
+let monthCheating = 0;
+
+pins.forEach(pin => {
+if (pin.created) {
+const pinDate = new Date(pin.created);
+if (pinDate.getMonth() === date.getMonth() && pinDate.getFullYear() === date.getFullYear()) {
+monthTotal++;
+if (pin.status === 'cheating' || pin.result === 'cheating') {
+monthCheating++;
+}
+}
+}
+});
+
+monthlyData.totalScans.push(monthTotal);
+monthlyData.cheatingScans.push(monthCheating);
+}
+
+return monthlyData;
+}
+
+function processDetectionData(pins) {
+const data = {
+legit: 0,
+cheating: 0,
+suspicious: 0,
+pending: 0
+};
+
+pins.forEach(pin => {
+if (pin.status === 'finished') {
+if (pin.result === 'none' || pin.result === 'clean') {
+data.legit++;
+} else if (pin.result === 'cheating') {
+data.cheating++;
+} else {
+data.suspicious++;
+}
+} else if (pin.status === 'pending') {
+data.pending++;
+}
+});
+
+return data;
+}
+
+function showChartError() {
+// Show error state in charts
+const scansCtx = document.getElementById('scansChart').getContext('2d');
+const detectionCtx = document.getElementById('detectionChart').getContext('2d');
+
+// Error chart for scans
+new Chart(scansCtx, {
+type: 'line',
+data: {
+labels: ['Error'],
+datasets: [{
+label: 'No Data Available',
+data: [0],
+borderColor: '#ef4444',
+backgroundColor: 'rgba(239, 68, 68, 0.1)',
+borderWidth: 2,
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { display: false }
+}
+}
+});
+
+// Error chart for detection
+new Chart(detectionCtx, {
+type: 'doughnut',
+data: {
+labels: ['No Data'],
+datasets: [{
+data: [1],
+backgroundColor: ['#ef4444'],
+borderColor: '#0d0d10',
+borderWidth: 3
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { display: false }
+}
+}
+});
+}
+
+// Update metrics with animation using real data
+async function updateMetrics() {
+try {
+// Fetch real data from Firebase
+const pinsResponse = await fetch(`${DB_URL}/pins.json`);
+const pinsData = await pinsResponse.json();
+const pins = pinsData ? Object.values(pinsData) : [];
+
+// Calculate real metrics
+const metrics = calculateRealMetrics(pins);
 
 Object.keys(metrics).forEach(key => {
 const element = document.getElementById(key);
@@ -2236,6 +2363,75 @@ if (element) {
 animateValue(element, 0, metrics[key], 2000, key);
 }
 });
+} catch (error) {
+console.error('Error loading metrics data:', error);
+// Use fallback data if Firebase fails
+const fallbackMetrics = {
+totalScans: 0,
+legitScans: 0,
+cheatingScans: 0,
+suspiciousScans: 0,
+avgScanTime: '0s',
+successRate: '0%'
+};
+
+Object.keys(fallbackMetrics).forEach(key => {
+const element = document.getElementById(key);
+if (element) {
+animateValue(element, 0, fallbackMetrics[key], 2000, key);
+}
+});
+}
+}
+
+function calculateRealMetrics(pins) {
+const metrics = {
+totalScans: pins.length,
+legitScans: 0,
+cheatingScans: 0,
+suspiciousScans: 0,
+avgScanTime: '0s',
+successRate: '0%'
+};
+
+let totalScanTime = 0;
+let scanTimeCount = 0;
+
+pins.forEach(pin => {
+// Count by status/result
+if (pin.status === 'finished') {
+if (pin.result === 'none' || pin.result === 'clean') {
+metrics.legitScans++;
+} else if (pin.result === 'cheating') {
+metrics.cheatingScans++;
+} else {
+metrics.suspiciousScans++;
+}
+} else if (pin.status === 'pending') {
+metrics.suspiciousScans++; // Count pending as suspicious
+}
+
+// Calculate scan time
+if (pin.startTime && pin.endTime) {
+const duration = (new Date(pin.endTime) - new Date(pin.startTime)) / 1000; // in seconds
+totalScanTime += duration;
+scanTimeCount++;
+}
+});
+
+// Calculate average scan time
+if (scanTimeCount > 0) {
+const avgSeconds = Math.round(totalScanTime / scanTimeCount);
+metrics.avgScanTime = avgSeconds < 60 ? `${avgSeconds}s` : `${Math.round(avgSeconds / 60)}m ${avgSeconds % 60}s`;
+}
+
+// Calculate success rate (legit scans / total finished scans)
+const finishedScans = pins.filter(pin => pin.status === 'finished').length;
+if (finishedScans > 0) {
+metrics.successRate = `${Math.round((metrics.legitScans / finishedScans) * 100)}%`;
+}
+
+return metrics;
 }
 
 function animateValue(element, start, end, duration, type) {
