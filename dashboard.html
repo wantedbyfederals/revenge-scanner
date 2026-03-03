@@ -1081,25 +1081,49 @@ animation: pulseLine 2s infinite;
 .stat-number {
 font-size: 2.2rem;
 font-weight: 900;
-color: var(--accent);
-text-shadow: 0 0 15px rgba(255, 65, 65, 0.6), 0 0 30px rgba(255, 65, 65, 0.3);
+color: #ffffff;
+text-shadow: 0 0 15px rgba(255, 65, 65, 0.8), 0 0 30px rgba(255, 65, 65, 0.4);
 margin-bottom: 0.8rem;
 font-family: 'JetBrains Mono', monospace;
 position: relative;
 z-index: 2;
+background: linear-gradient(135deg, rgba(255, 65, 65, 0.1), transparent);
+padding: 15px 20px;
+border-radius: 8px;
+border: 2px solid rgba(255, 65, 65, 0.3);
+clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 
 .stat-number::before {
 content: '';
 position: absolute;
-top: -8px;
-left: -8px;
-right: -8px;
-bottom: -8px;
-background: linear-gradient(45deg, transparent, rgba(255, 65, 65, 0.2), transparent);
+top: -10px;
+left: -10px;
+right: -10px;
+bottom: -10px;
+background: linear-gradient(45deg, transparent, rgba(255, 65, 65, 0.3), transparent);
 border-radius: 8px;
 z-index: -1;
 animation: glowPulse 3s infinite;
+}
+
+.stat-number::after {
+content: '';
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 60%;
+height: 60%;
+background: conic-gradient(from 0deg, transparent, rgba(255, 65, 65, 0.2), transparent);
+border-radius: 50%;
+animation: rotate 4s linear infinite;
+z-index: -1;
+}
+
+@keyframes rotate {
+0% { transform: translate(-50%, -50%) rotate(0deg); }
+100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .stat-label {
