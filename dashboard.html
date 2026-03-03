@@ -2816,12 +2816,18 @@ if (isCheating) {
         console.log('Counted as suspicious (finished with issues):', pin.id);
     }
 } else if (pin.status === 'pending' || pin.status === 'running' || pin.status === 'active' || pin.status === 'initializing') {
-    metrics.suspiciousScans++; // Count pending as suspicious
-    console.log('Counted as suspicious (pending):', pin.id);
+    // Count in-progress scans as legit if no critical findings
+    if (!hasCriticalFindings) {
+        metrics.legitScans++;
+        console.log('Counted as legit (in-progress):', pin.id);
+    } else {
+        metrics.cheatingScans++;
+        console.log('Counted as cheating (in-progress with critical):', pin.id);
+    }
 } else if (!hasFindings) {
-    // No findings data yet, count as suspicious
-    metrics.suspiciousScans++;
-    console.log('Counted as suspicious (no findings):', pin.id);
+    // No findings data yet, count as legit (clean scan)
+    metrics.legitScans++;
+    console.log('Counted as legit (no findings):', pin.id);
 } else {
     // Default to legit if no issues found
     metrics.legitScans++;
