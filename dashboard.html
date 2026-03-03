@@ -606,52 +606,142 @@ color: white;
 color: #22c55e;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .status-finished::before {
+content: '\f00c';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .status-pending {
 color: #f59e0b;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .status-pending::before {
+content: '\f252';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .status-expired {
 color: #ef4444;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .status-expired::before {
+content: '\f071';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .used-yes {
 color: #22c55e;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .used-yes::before {
+content: '\f058';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .used-no {
 color: #94a3b8;
 font-weight: 700;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .used-no::before {
+content: '\f057';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .mode-kernel {
 color: #ff4141;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(255, 65, 65, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .mode-kernel::before {
+content: '\f085';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .mode-user {
 color: #ff6b6b;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(255, 107, 107, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .mode-user::before {
+content: '\f007';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .result-cheating {
 color: #ef4444;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .result-cheating::before {
+content: '\f071';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .result-none {
 color: #94a3b8;
 font-weight: 700;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .result-none::before {
+content: '\f058';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .result-cheating {
@@ -671,15 +761,60 @@ border: 1px solid rgba(255, 255, 255, 0.1);
 color: #e2e8f0;
 font-size: 1rem;
 cursor: pointer;
-padding: 6px 10px;
-border-radius: 6px;
+padding: 8px 12px;
+border-radius: 8px;
 transition: all 0.2s ease;
+position: relative;
 }
 
 .pins-table .actions-menu:hover {
 background: rgba(255, 65, 65, 0.2);
 color: white;
 border-color: var(--accent);
+}
+
+.actions-dropdown {
+position: absolute;
+top: 100%;
+right: 0;
+background: var(--panel-bg);
+border: 1px solid var(--glass-border);
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+z-index: 1000;
+min-width: 150px;
+display: none;
+}
+
+.actions-dropdown.show {
+display: block;
+}
+
+.actions-dropdown-item {
+padding: 10px 16px;
+color: #e2e8f0;
+font-size: 0.875rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s ease;
+border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.actions-dropdown-item:last-child {
+border-bottom: none;
+}
+
+.actions-dropdown-item:hover {
+background: rgba(255, 65, 65, 0.1);
+color: white;
+}
+
+.actions-dropdown-item:first-child:hover {
+background: rgba(34, 197, 94, 0.1);
+}
+
+.actions-dropdown-item:last-child:hover {
+background: rgba(239, 68, 68, 0.1);
 }
 
 .search-filter-container {
@@ -1036,13 +1171,63 @@ tableBody.innerHTML += `
 <td class="${resultClass}">${resultText}</td>
 <td class="${modeClass}">${modeText}</td>
 <td>
-<button class="actions-menu" onclick="openReport('${pin}')">
+<button class="actions-menu" onclick="toggleActionsDropdown('${pin}')">
 <i class="fa fa-ellipsis-v"></i>
 </button>
+<div class="actions-dropdown" id="dropdown-${pin}">
+<div class="actions-dropdown-item" onclick="openReport('${pin}')">
+<i class="fa fa-eye"></i> Open Scan
+</div>
+<div class="actions-dropdown-item" onclick="deletePin('${pin}')">
+<i class="fa fa-trash"></i> Delete Scan
+</div>
+</div>
 </td>
 </tr>`;
 }
 }
+
+function toggleActionsDropdown(pin) {
+const dropdown = document.getElementById(`dropdown-${pin}`);
+const allDropdowns = document.querySelectorAll('.actions-dropdown');
+
+// Close all other dropdowns
+allDropdowns.forEach(d => {
+if (d !== dropdown) {
+d.classList.remove('show');
+}
+});
+
+// Toggle current dropdown
+dropdown.classList.toggle('show');
+}
+
+function deletePin(pin) {
+if (confirm('Are you sure you want to delete this scan? This action cannot be undone.')) {
+closeAllDropdowns();
+fetch(`${DB_URL}/pins/${pin}.json`, { method: 'DELETE' })
+.then(() => {
+loadPins();
+})
+.catch(error => {
+console.error('Error deleting pin:', error);
+alert('Error deleting scan. Please try again.');
+});
+}
+}
+
+function closeAllDropdowns() {
+document.querySelectorAll('.actions-dropdown').forEach(d => {
+d.classList.remove('show');
+});
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+if (!event.target.closest('.actions-menu')) {
+closeAllDropdowns();
+}
+});
 
 function filterPinsTable() {
 const input = document.getElementById('scan-search').value.toUpperCase();
