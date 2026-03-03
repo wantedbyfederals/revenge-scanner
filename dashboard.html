@@ -1085,6 +1085,25 @@ GENERATE PIN
 </div>
 </div>
 
+<div class="stats-overview">
+<div class="stat-card">
+<div class="stat-number" id="totalPins">0</div>
+<div class="stat-label">TOTAL SCANS</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="legitPins">0</div>
+<div class="stat-label">LEGIT</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="cheatingPins">0</div>
+<div class="stat-label">CHEATING</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="suspiciousPins">0</div>
+<div class="stat-label">SUSPICIOUS</div>
+</div>
+</div>
+
 <div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 </div>
 
@@ -1268,6 +1287,11 @@ const data = await res.json();
 const grid = document.getElementById('pins-grid');
 grid.innerHTML = "";
 
+let totalPins = 0;
+let legitPins = 0;
+let cheatingPins = 0;
+let suspiciousPins = 0;
+
 for (let pin in data) {
 const pinData = data[pin];
 const isUsed = pinData.findings && pinData.findings.findings && pinData.findings.findings.length > 0;
@@ -1275,14 +1299,14 @@ const isExpired = new Date() - new Date(pinData.timestamp) > 24 * 60 * 60 * 1000
 const hasCheating = pinData.findings && pinData.findings.findings && 
 pinData.findings.findings.some(f => !f.category || f.category === 'Critical');
 
-let status = 'pending';
-let statusColor = '#f59e0b';
-if (isExpired) {
-status = 'expired';
-statusColor = '#ef4444';
+totalPins++;
+
+if (hasCheating) {
+cheatingPins++;
+} else if (isUsed && !hasCheating) {
+legitPins++;
 } else if (isUsed) {
-status = 'finished';
-statusColor = '#22c55e';
+suspiciousPins++;
 }
 
 const modeText = pinData.mode || 'User Mode';
@@ -1304,6 +1328,12 @@ grid.innerHTML += `
 </div>
 </div>`;
 }
+
+// Update statistics
+document.getElementById('totalPins').textContent = totalPins;
+document.getElementById('legitPins').textContent = legitPins;
+document.getElementById('cheatingPins').textContent = cheatingPins;
+document.getElementById('suspiciousPins').textContent = suspiciousPins;
 }
 
 function toggleActionsDropdown(pin) {
