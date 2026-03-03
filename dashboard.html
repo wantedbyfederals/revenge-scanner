@@ -287,6 +287,223 @@ background: #ff2020;
 transform: translateY(-2px);
 box-shadow: 0 10px 20px rgba(255, 65, 65, 0.3);
 }
+
+.modal-input-group {
+margin-bottom: 1.5rem;
+text-align: left;
+}
+
+.modal-input-group label {
+display: block;
+color: white;
+font-size: 0.875rem;
+font-weight: 700;
+margin-bottom: 0.5rem;
+}
+
+.modal-input,
+.modal-select {
+width: 100%;
+padding: 0.75rem 1rem;
+background: rgba(255, 255, 255, 0.05);
+border: 1px solid rgba(255, 255, 255, 0.1);
+border-radius: 8px;
+color: white;
+font-size: 1rem;
+outline: none;
+transition: all 0.2s ease;
+}
+
+.modal-input::placeholder {
+color: #94a3b8;
+}
+
+.modal-input:focus,
+.modal-select:focus {
+border-color: var(--accent);
+box-shadow: 0 0 0 2px rgba(255, 65, 65, 0.2);
+}
+
+.modal-select {
+appearance: none;
+-webkit-appearance: none;
+-moz-appearance: none;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+background-repeat: no-repeat;
+background-position: right 0.75rem center;
+background-size: 1em;
+padding-right: 2.5rem;
+}
+
+.toggle-switch {
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+
+.toggle-switch-checkbox {
+display: none;
+}
+
+.toggle-switch-label {
+position: relative;
+display: inline-block;
+width: 60px;
+height: 30px;
+cursor: pointer;
+}
+
+.toggle-switch-inner {
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(255, 255, 255, 0.1);
+border-radius: 30px;
+transition: all 0.3s ease;
+border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toggle-switch-switch {
+position: absolute;
+top: 3px;
+left: 3px;
+width: 24px;
+height: 24px;
+background: white;
+border-radius: 50%;
+transition: all 0.3s ease;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-inner {
+background: var(--accent);
+border-color: var(--accent);
+}
+
+.toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-switch {
+transform: translateX(30px);
+}
+
+.toggle-switch-text {
+color: white;
+font-weight: 700;
+font-size: 0.875rem;
+}
+
+.pin-display {
+background: rgba(255, 65, 65, 0.1);
+border: 2px solid var(--accent);
+border-radius: 12px;
+padding: 1.5rem;
+margin: 1.5rem 0;
+text-align: center;
+}
+
+.pin-number {
+font-size: 2.5rem;
+font-weight: 900;
+color: var(--accent);
+letter-spacing: 0.1em;
+margin-bottom: 0.5rem;
+}
+
+.pin-copy-btn {
+background: rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(255, 255, 255, 0.2);
+color: white;
+padding: 0.5rem 1rem;
+border-radius: 6px;
+font-size: 0.75rem;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+
+.pin-copy-btn:hover {
+background: rgba(255, 255, 255, 0.2);
+}
+
+.pin-details {
+background: rgba(255, 255, 255, 0.05);
+border-radius: 8px;
+padding: 1rem;
+margin: 1rem 0;
+}
+
+.pin-detail-row {
+display: flex;
+justify-content: space-between;
+padding: 0.5rem 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pin-detail-row:last-child {
+border-bottom: none;
+}
+
+.pin-detail-label {
+color: #94a3b8;
+font-size: 0.875rem;
+}
+
+.pin-detail-value {
+color: white;
+font-weight: 700;
+font-size: 0.875rem;
+}
+
+.progress-container {
+margin: 1.5rem 0;
+}
+
+.progress-label {
+display: flex;
+justify-content: space-between;
+margin-bottom: 0.5rem;
+}
+
+.progress-title {
+color: white;
+font-weight: 700;
+font-size: 0.875rem;
+}
+
+.progress-percentage {
+color: var(--accent);
+font-weight: 700;
+font-size: 0.875rem;
+}
+
+.progress-bar {
+height: 8px;
+background: rgba(255, 255, 255, 0.1);
+border-radius: 4px;
+overflow: hidden;
+}
+
+.progress-fill {
+height: 100%;
+background: linear-gradient(90deg, var(--accent), #ff2020);
+border-radius: 4px;
+transition: width 0.5s ease;
+width: 0%;
+}
+
+.progress-message {
+color: #94a3b8;
+font-size: 0.75rem;
+margin-top: 0.5rem;
+text-align: center;
+}
+
+.pin-expiry {
+text-align: center;
+color: #94a3b8;
+font-size: 0.875rem;
+margin: 1rem 0;
+}
 </style>
 </head>
 
@@ -373,6 +590,81 @@ Delete Scan
 <div id="report-content" class="grid grid-cols-12 gap-8"></div>
 </div>
 </main>
+
+<!-- Create Pin Modal -->
+<div id="createPinModal" class="modal-overlay">
+<div class="modal-content">
+<h3 class="modal-title">Create New Pin</h3>
+<div class="modal-input-group">
+<label for="pinName">Pin Name (optional)</label>
+<input type="text" id="pinName" class="modal-input" placeholder="Name to identify the pin">
+</div>
+<div class="modal-input-group">
+<label for="gameSelect">Game</label>
+<select id="gameSelect" class="modal-select">
+<option value="fivem">FiveM</option>
+<option value="minecraft">Minecraft</option>
+<option value="roblox">Roblox</option>
+</select>
+</div>
+<div class="modal-input-group">
+<label>Mode</label>
+<div class="toggle-switch">
+<input type="checkbox" id="modeToggle" class="toggle-switch-checkbox" checked>
+<label for="modeToggle" class="toggle-switch-label">
+<span class="toggle-switch-inner"></span>
+<span class="toggle-switch-switch"></span>
+</label>
+<span class="toggle-switch-text">Kernel Mode</span>
+</div>
+</div>
+<div class="modal-buttons">
+<button onclick="closeCreatePinModal()" class="modal-btn modal-btn-cancel">Cancel</button>
+<button onclick="createPin()" class="modal-btn modal-btn-confirm">Create Pin</button>
+</div>
+</div>
+</div>
+
+<!-- Pin Details Modal -->
+<div id="pinDetailsModal" class="modal-overlay">
+<div class="modal-content">
+<h3 class="modal-title">Pin Details</h3>
+<div class="pin-display">
+<div class="pin-number" id="generatedPin">000000</div>
+<button onclick="copyPin()" class="pin-copy-btn">
+<i class="fa fa-copy"></i> Copy
+</button>
+</div>
+<div class="pin-details">
+<div class="pin-detail-row">
+<span class="pin-detail-label">Name:</span>
+<span class="pin-detail-value" id="pinDetailName">--</span>
+</div>
+<div class="pin-detail-row">
+<span class="pin-detail-label">Game:</span>
+<span class="pin-detail-value" id="pinDetailGame">--</span>
+</div>
+<div class="pin-detail-row">
+<span class="pin-detail-label">Mode:</span>
+<span class="pin-detail-value" id="pinDetailMode">--</span>
+</div>
+</div>
+<div class="progress-container">
+<div class="progress-label">
+<span class="progress-title">Scan Status</span>
+<span class="progress-percentage" id="progressPercentage">0%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+<div class="progress-message" id="progressMessage">Initializing scan...</div>
+</div>
+<div class="pin-expiry">Pin will be available for 24 hours.</div>
+<div class="modal-buttons">
+<button onclick="closePinDetailsModal()" class="modal-btn modal-btn-cancel">Close</button>
+</div>
+</div>
+</div>
 
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="modal-overlay">
@@ -825,17 +1117,118 @@ location.reload();
 }
 
 async function generatePIN() {
+showCreatePinModal();
+}
+
+function showCreatePinModal() {
+const modal = document.getElementById('createPinModal');
+modal.classList.add('active');
+}
+
+function closeCreatePinModal() {
+const modal = document.getElementById('createPinModal');
+modal.classList.remove('active');
+}
+
+async function createPin() {
+const name = document.getElementById('pinName').value || 'Untitled Scan';
+const game = document.getElementById('gameSelect').value;
+const mode = document.getElementById('modeToggle').checked ? 'Kernel Mode' : 'User Mode';
+
+closeCreatePinModal();
+
 const pin = Math.floor(100000 + Math.random() * 900000).toString();
+
 await fetch(`${DB_URL}/pins/${pin}.json`, {
 method: 'PUT',
 body: JSON.stringify({
 staff: "admin",
 timestamp: new Date().toLocaleString(),
-pcName: "INITIALIZING..."
+pcName: name,
+game: game,
+mode: mode,
+status: 'initializing'
 })
 });
-loadPins();
+
+showPinDetailsModal(pin, name, game, mode);
 }
+
+function showPinDetailsModal(pin, name, game, mode) {
+document.getElementById('generatedPin').textContent = pin;
+document.getElementById('pinDetailName').textContent = name;
+document.getElementById('pinDetailGame').textContent = game.charAt(0).toUpperCase() + game.slice(1);
+document.getElementById('pinDetailMode').textContent = mode;
+
+const modal = document.getElementById('pinDetailsModal');
+modal.classList.add('active');
+
+simulateScanProgress();
+}
+
+function closePinDetailsModal() {
+const modal = document.getElementById('pinDetailsModal');
+modal.classList.remove('active');
+}
+
+function copyPin() {
+const pin = document.getElementById('generatedPin').textContent;
+navigator.clipboard.writeText(pin).then(() => {
+const btn = event.target.closest('.pin-copy-btn');
+const originalHTML = btn.innerHTML;
+btn.innerHTML = '<i class="fa fa-check"></i> Copied!';
+btn.style.background = 'rgba(34, 197, 94, 0.2)';
+btn.style.borderColor = 'rgba(34, 197, 94, 0.5)';
+setTimeout(() => {
+btn.innerHTML = originalHTML;
+btn.style.background = '';
+btn.style.borderColor = '';
+}, 2000);
+});
+}
+
+function simulateScanProgress() {
+let progress = 0;
+const progressFill = document.getElementById('progressFill');
+const progressPercentage = document.getElementById('progressPercentage');
+const progressMessage = document.getElementById('progressMessage');
+
+const steps = [
+{ progress: 15, message: 'Initializing hardware scan...' },
+{ progress: 30, message: 'Scanning system signatures...' },
+{ progress: 45, message: 'Analyzing process memory...' },
+{ progress: 60, message: 'Checking for hollowing techniques...' },
+{ progress: 75, message: 'Validating file signatures...' },
+{ progress: 90, message: 'Finalizing analysis...' },
+{ progress: 100, message: 'Scan completed successfully!' }
+];
+
+let currentStep = 0;
+
+const interval = setInterval(() => {
+if (currentStep < steps.length) {
+const step = steps[currentStep];
+progress = step.progress;
+progressFill.style.width = progress + '%';
+progressPercentage.textContent = progress + '%';
+progressMessage.textContent = step.message;
+currentStep++;
+} else {
+clearInterval(interval);
+}
+}, 1500);
+}
+
+const toggleSwitch = document.getElementById('modeToggle');
+const toggleText = document.querySelector('.toggle-switch-text');
+
+toggleSwitch.addEventListener('change', function() {
+if (this.checked) {
+toggleText.textContent = 'Kernel Mode';
+} else {
+toggleText.textContent = 'User Mode';
+}
+});
 
 window.onload = () => {
 if(localStorage.getItem('auth_status') === 'granted')
