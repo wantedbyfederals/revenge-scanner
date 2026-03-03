@@ -1573,11 +1573,16 @@ continue;
 
 console.log('Final counts - Total:', totalPins, 'Legit:', legitPins, 'Cheating:', cheatingPins, 'Suspicious:', suspiciousPins);
 
-// Update statistics
-document.getElementById('totalPins').textContent = totalPins;
-document.getElementById('legitPins').textContent = legitPins;
-document.getElementById('cheatingPins').textContent = cheatingPins;
-document.getElementById('suspiciousPins').textContent = suspiciousPins;
+// Update statistics - use correct IDs that match the HTML
+const totalScansElement = document.getElementById('totalScans');
+const legitScansElement = document.getElementById('legitScans');
+const cheatingScansElement = document.getElementById('cheatingScans');
+const suspiciousScansElement = document.getElementById('suspiciousScans');
+
+if (totalScansElement) totalScansElement.textContent = totalPins;
+if (legitScansElement) legitScansElement.textContent = legitPins;
+if (cheatingScansElement) cheatingScansElement.textContent = cheatingPins;
+if (suspiciousScansElement) suspiciousScansElement.textContent = suspiciousPins;
 
 if (totalPins === 0) {
 grid.innerHTML = `
