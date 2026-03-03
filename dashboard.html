@@ -2254,11 +2254,19 @@ let monthTotal = 0;
 let monthCheating = 0;
 
 pins.forEach(pin => {
-if (pin.created) {
-const pinDate = new Date(pin.created);
+// Check if pin has a timestamp (created, timestamp, or any date field)
+const pinDate = pin.created ? new Date(pin.created) : 
+pin.timestamp ? new Date(pin.timestamp) : 
+pin.date ? new Date(pin.date) : null;
+
+if (pinDate && !isNaN(pinDate.getTime())) {
 if (pinDate.getMonth() === date.getMonth() && pinDate.getFullYear() === date.getFullYear()) {
 monthTotal++;
-if (pin.status === 'cheating' || pin.result === 'cheating') {
+// Check for cheating detection more thoroughly
+if (pin.result === 'cheating' || 
+pin.status === 'cheating' ||
+pin.detection === 'cheating' ||
+(pin.findings && pin.findings.some(f => f.type === 'cheating'))) {
 monthCheating++;
 }
 }
@@ -2281,16 +2289,24 @@ pending: 0
 };
 
 pins.forEach(pin => {
-if (pin.status === 'finished') {
-if (pin.result === 'none' || pin.result === 'clean') {
-data.legit++;
-} else if (pin.result === 'cheating') {
+// Check for cheating detection more thoroughly
+const isCheating = pin.result === 'cheating' || 
+pin.status === 'cheating' ||
+pin.detection === 'cheating' ||
+(pin.findings && pin.findings.some(f => f.type === 'cheating'));
+
+if (isCheating) {
 data.cheating++;
+} else if (pin.status === 'finished') {
+if (pin.result === 'none' || pin.result === 'clean' || pin.result === 'safe') {
+data.legit++;
 } else {
 data.suspicious++;
 }
-} else if (pin.status === 'pending') {
+} else if (pin.status === 'pending' || pin.status === 'running' || pin.status === 'active') {
 data.pending++;
+} else {
+data.suspicious++;
 }
 });
 
@@ -2357,12 +2373,19 @@ const pins = pinsData ? Object.values(pinsData) : [];
 // Calculate real metrics
 const metrics = calculateRealMetrics(pins);
 
+// Calculate percentage changes
+const changes = await calculatePercentageChanges(pins);
+
 Object.keys(metrics).forEach(key => {
 const element = document.getElementById(key);
 if (element) {
 animateValue(element, 0, metrics[key], 2000, key);
 }
 });
+
+// Update percentage change indicators
+updatePercentageIndicators(changes);
+
 } catch (error) {
 console.error('Error loading metrics data:', error);
 // Use fallback data if Firebase fails
@@ -2384,6 +2407,99 @@ animateValue(element, 0, fallbackMetrics[key], 2000, key);
 }
 }
 
+// Calculate real percentage changes based on historical data
+async function calculatePercentageChanges(pins) {
+const now = new Date();
+const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+const currentMonthPins = pins.filter(pin => {
+const pinDate = pin.created ? new Date(pin.created) : 
+pin.timestamp ? new Date(pin.timestamp) : 
+pin.date ? new Date(pin.date) : null;
+return pinDate && pinDate >= currentMonth;
+});
+
+const lastMonthPins = pins.filter(pin => {
+const pinDate = pin.created ? new Date(pin.created) : 
+pin.timestamp ? new Date(pin.timestamp) : 
+pin.date ? new Date(pin.date) : null;
+return pinDate && pinDate >= lastMonth && pinDate < currentMonth;
+});
+
+const currentMetrics = calculateRealMetrics(currentMonthPins);
+const lastMetrics = calculateRealMetrics(lastMonthPins);
+
+const changes = {
+totalScans: calculateChange(currentMetrics.totalScans, lastMetrics.totalScans),
+legitScans: calculateChange(currentMetrics.legitScans, lastMetrics.legitScans),
+cheatingScans: calculateChange(currentMetrics.cheatingScans, lastMetrics.cheatingScans),
+suspiciousScans: calculateChange(currentMetrics.suspiciousScans, lastMetrics.suspiciousScans),
+avgScanTime: calculateTimeChange(currentMetrics.avgScanTime, lastMetrics.avgScanTime),
+successRate: calculateChange(parseFloat(currentMetrics.successRate), parseFloat(lastMetrics.successRate))
+};
+
+return changes;
+}
+
+function calculateChange(current, previous) {
+if (previous === 0) return current > 0 ? { value: '+100%', positive: true } : { value: '0%', positive: false };
+const change = ((current - previous) / previous) * 100;
+return {
+value: `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`,
+positive: change >= 0
+};
+}
+
+function calculateTimeChange(current, previous) {
+// Convert time strings to seconds for comparison
+const currentSeconds = timeToSeconds(current);
+const previousSeconds = timeToSeconds(previous);
+
+if (previousSeconds === 0) return { value: '0%', positive: true };
+const change = ((currentSeconds - previousSeconds) / previousSeconds) * 100;
+// For time, lower is better, so positive means decrease
+return {
+value: `${change <= 0 ? '-' : '+'}${Math.abs(change).toFixed(1)}%`,
+positive: change <= 0
+};
+}
+
+function timeToSeconds(timeStr) {
+if (!timeStr || timeStr === '0s') return 0;
+const match = timeStr.match(/(\d+)m?\s*(\d+)?s?/);
+if (!match) return 0;
+const minutes = parseInt(match[1]) || 0;
+const seconds = parseInt(match[2]) || 0;
+return minutes * 60 + seconds;
+}
+
+function updatePercentageIndicators(changes) {
+// Update percentage change indicators for each metric
+const indicators = {
+totalScans: changes.totalScans,
+legitScans: changes.legitScans,
+cheatingScans: changes.cheatingScans,
+suspiciousScans: changes.suspiciousScans,
+avgScanTime: changes.avgScanTime,
+successRate: changes.successRate
+};
+
+Object.keys(indicators).forEach(key => {
+const metricCard = document.getElementById(key)?.closest('.metric-card');
+if (metricCard) {
+const changeElement = metricCard.querySelector('.metric-change');
+if (changeElement) {
+const change = indicators[key];
+changeElement.className = `metric-change ${change.positive ? 'positive' : 'negative'}`;
+changeElement.innerHTML = `
+<i class="fa fa-arrow-${change.positive ? 'up' : 'down'}"></i> ${change.value}
+`;
+}
+}
+});
+}
+
 function calculateRealMetrics(pins) {
 const metrics = {
 totalScans: pins.length,
@@ -2398,17 +2514,25 @@ let totalScanTime = 0;
 let scanTimeCount = 0;
 
 pins.forEach(pin => {
+// Check for cheating detection more thoroughly
+const isCheating = pin.result === 'cheating' || 
+pin.status === 'cheating' ||
+pin.detection === 'cheating' ||
+(pin.findings && pin.findings.some(f => f.type === 'cheating'));
+
 // Count by status/result
-if (pin.status === 'finished') {
-if (pin.result === 'none' || pin.result === 'clean') {
-metrics.legitScans++;
-} else if (pin.result === 'cheating') {
+if (isCheating) {
 metrics.cheatingScans++;
+} else if (pin.status === 'finished') {
+if (pin.result === 'none' || pin.result === 'clean' || pin.result === 'safe') {
+metrics.legitScans++;
 } else {
 metrics.suspiciousScans++;
 }
-} else if (pin.status === 'pending') {
+} else if (pin.status === 'pending' || pin.status === 'running' || pin.status === 'active') {
 metrics.suspiciousScans++; // Count pending as suspicious
+} else {
+metrics.suspiciousScans++;
 }
 
 // Calculate scan time
