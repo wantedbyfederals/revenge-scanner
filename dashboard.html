@@ -177,6 +177,116 @@ z-index: 9999;
 .table-row-hover:hover {
 background: rgba(255, 65, 65, 0.05);
 }
+
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0, 0, 0, 0.8);
+backdrop-filter: blur(10px);
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 10000;
+opacity: 0;
+visibility: hidden;
+transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+opacity: 1;
+visibility: visible;
+}
+
+.modal-content {
+background: var(--panel-bg);
+border: 1px solid var(--glass-border);
+border-radius: 16px;
+padding: 2rem;
+max-width: 400px;
+width: 90%;
+text-align: center;
+transform: scale(0.9);
+transition: all 0.3s ease;
+border-left: 4px solid var(--accent);
+}
+
+.modal-overlay.active .modal-content {
+transform: scale(1);
+}
+
+.modal-icon {
+width: 48px;
+height: 48px;
+background: rgba(255, 65, 65, 0.1);
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0 auto 1.5rem;
+}
+
+.modal-icon i {
+color: var(--accent);
+font-size: 20px;
+}
+
+.modal-title {
+font-size: 1.5rem;
+font-weight: 900;
+text-transform: uppercase;
+letter-spacing: 0.05em;
+color: white;
+margin-bottom: 0.5rem;
+}
+
+.modal-text {
+color: #94a3b8;
+font-size: 0.875rem;
+margin-bottom: 2rem;
+line-height: 1.5;
+}
+
+.modal-buttons {
+display: flex;
+gap: 1rem;
+justify-content: center;
+}
+
+.modal-btn {
+padding: 0.75rem 1.5rem;
+border-radius: 8px;
+font-weight: 900;
+font-size: 0.75rem;
+text-transform: uppercase;
+letter-spacing: 0.1em;
+transition: all 0.2s ease;
+cursor: pointer;
+border: none;
+}
+
+.modal-btn-cancel {
+background: rgba(255, 255, 255, 0.1);
+color: #94a3b8;
+}
+
+.modal-btn-cancel:hover {
+background: rgba(255, 255, 255, 0.2);
+color: white;
+}
+
+.modal-btn-confirm {
+background: var(--accent);
+color: white;
+}
+
+.modal-btn-confirm:hover {
+background: #ff2020;
+transform: translateY(-2px);
+box-shadow: 0 10px 20px rgba(255, 65, 65, 0.3);
+}
 </style>
 </head>
 
@@ -263,6 +373,21 @@ Delete Scan
 <div id="report-content" class="grid grid-cols-12 gap-8"></div>
 </div>
 </main>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal-overlay">
+<div class="modal-content">
+<div class="modal-icon">
+<i class="fa fa-exclamation-triangle"></i>
+</div>
+<h3 class="modal-title">Delete Scan</h3>
+<p class="modal-text">Are you sure you want to permanently delete this scan? This action cannot be undone and all associated data will be lost.</p>
+<div class="modal-buttons">
+<button onclick="closeDeleteModal()" class="modal-btn modal-btn-cancel">Cancel</button>
+<button onclick="confirmDeleteScan()" class="modal-btn modal-btn-confirm">Delete Scan</button>
+</div>
+</div>
+</div>
 
 <script>
 const DB_URL = "https://revengescanner-default-rtdb.firebaseio.com";
@@ -667,11 +792,24 @@ this.classList.add('active');
 }
 
 async function deleteCurrentScan() {
-if(confirm('DELETE RECORD?')) {
+showDeleteModal();
+}
+
+function showDeleteModal() {
+const modal = document.getElementById('deleteModal');
+modal.classList.add('active');
+}
+
+function closeDeleteModal() {
+const modal = document.getElementById('deleteModal');
+modal.classList.remove('active');
+}
+
+async function confirmDeleteScan() {
+closeDeleteModal();
 await fetch(`${DB_URL}/pins/${openPin}.json`, { method: 'DELETE' });
 abortSession();
 loadPins();
-}
 }
 
 function abortSession(push = true) {
