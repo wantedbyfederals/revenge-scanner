@@ -1495,8 +1495,12 @@ loadPins();
 }
 
 async function loadPins() {
+try {
+console.log('Loading pins from Firebase...');
 const res = await fetch(`${DB_URL}/pins.json`);
 const data = await res.json();
+console.log('Raw pins data:', data);
+
 const grid = document.getElementById('pins-grid');
 grid.innerHTML = "";
 
@@ -1507,10 +1511,14 @@ let suspiciousPins = 0;
 
 for (let pin in data) {
 const pinData = data[pin];
+console.log('Processing pin:', pin, pinData);
+
 const isUsed = pinData.findings && pinData.findings.findings && pinData.findings.findings.length > 0;
 const isExpired = new Date() - new Date(pinData.timestamp) > 24 * 60 * 60 * 1000;
 const hasCheating = pinData.findings && pinData.findings.findings && 
 pinData.findings.findings.some(f => !f.category || f.category === 'Critical');
+
+console.log('Pin', pin, 'isUsed:', isUsed, 'hasCheating:', hasCheating);
 
 totalPins++;
 
@@ -1542,11 +1550,25 @@ grid.innerHTML += `
 </div>`;
 }
 
+console.log('Final counts - Total:', totalPins, 'Legit:', legitPins, 'Cheating:', cheatingPins, 'Suspicious:', suspiciousPins);
+
 // Update statistics
 document.getElementById('totalPins').textContent = totalPins;
 document.getElementById('legitPins').textContent = legitPins;
 document.getElementById('cheatingPins').textContent = cheatingPins;
 document.getElementById('suspiciousPins').textContent = suspiciousPins;
+
+} catch (error) {
+console.error('Error loading pins:', error);
+// Show error message to user
+const grid = document.getElementById('pins-grid');
+grid.innerHTML = `
+<div class="col-span-full py-16 flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-white/5 rounded-2xl">
+<i class="fa fa-exclamation-triangle text-4xl mb-4 text-red-500"></i>
+<span class="text-sm font-black uppercase italic tracking-[0.3em]">Error loading data</span>
+<span class="text-xs text-gray-500 mt-2">Please check your connection and try again</span>
+</div>`;
+}
 }
 
 function toggleActionsDropdown(pin) {
@@ -2433,11 +2455,13 @@ if (pinDate && !isNaN(pinDate.getTime())) {
         console.log('Pin counted for month:', pin.id);
         
         // Check for cheating detection more thoroughly
+        const hasFindings = pin.findings && pin.findings.findings && Array.isArray(pin.findings.findings);
+        const findings = hasFindings ? pin.findings.findings : [];
+        const hasCriticalFindings = findings.some(f => f.category === 'Critical');
         const isCheating = pin.result === 'cheating' || 
                           pin.status === 'cheating' ||
                           pin.detection === 'cheating' ||
-                          (pin.findings && pin.findings.some(f => f.type === 'cheating')) ||
-                          (pin.findings && pin.findings.some(f => f.category === 'Critical'));
+                          hasCriticalFindings;
         
         if (isCheating) {
             monthCheating++;
@@ -2466,27 +2490,50 @@ pending: 0
 };
 
 pins.forEach(pin => {
+console.log('Processing detection for pin:', pin.id, pin);
+
+// Check if pin has findings data
+const hasFindings = pin.findings && pin.findings.findings && Array.isArray(pin.findings.findings);
+const findings = hasFindings ? pin.findings.findings : [];
+
 // Check for cheating detection more thoroughly
+const hasCriticalFindings = findings.some(f => f.category === 'Critical');
+const hasWarningFindings = findings.some(f => f.category === 'Warning');
+const hasSuspiciousFindings = findings.some(f => f.category === 'Suspicious');
 const isCheating = pin.result === 'cheating' || 
 pin.status === 'cheating' ||
 pin.detection === 'cheating' ||
-(pin.findings && pin.findings.some(f => f.type === 'cheating'));
+hasCriticalFindings;
+
+console.log('Pin', pin.id, 'findings count:', findings.length, 'hasCritical:', hasCriticalFindings, 'isCheating:', isCheating);
 
 if (isCheating) {
 data.cheating++;
-} else if (pin.status === 'finished') {
+} else if (hasFindings && findings.length > 0) {
+// Has findings but no critical = suspicious
+if (hasWarningFindings || hasSuspiciousFindings) {
+data.suspicious++;
+} else {
+data.legit++;
+}
+} else if (pin.status === 'finished' || pin.status === 'completed') {
 if (pin.result === 'none' || pin.result === 'clean' || pin.result === 'safe') {
 data.legit++;
 } else {
 data.suspicious++;
 }
-} else if (pin.status === 'pending' || pin.status === 'running' || pin.status === 'active') {
+} else if (pin.status === 'pending' || pin.status === 'running' || pin.status === 'active' || pin.status === 'initializing') {
+data.pending++;
+} else if (!hasFindings) {
+// No findings data yet, count as pending
 data.pending++;
 } else {
-data.suspicious++;
+// Default to legit if no issues found
+data.legit++;
 }
 });
 
+console.log('Final detection data:', data);
 return data;
 }
 
@@ -2690,23 +2737,32 @@ pins.forEach(pin => {
 console.log('Analyzing pin:', pin.id, pin);
     
 // Check for cheating detection more thoroughly
+const hasFindings = pin.findings && pin.findings.findings && Array.isArray(pin.findings.findings);
+const findings = hasFindings ? pin.findings.findings : [];
+const hasCriticalFindings = findings.some(f => f.category === 'Critical');
+const hasWarningFindings = findings.some(f => f.category === 'Warning');
+const hasSuspiciousFindings = findings.some(f => f.category === 'Suspicious');
 const isCheating = pin.result === 'cheating' || 
                   pin.status === 'cheating' ||
                   pin.detection === 'cheating' ||
-                  (pin.findings && pin.findings.some(f => f.type === 'cheating')) ||
-                  (pin.findings && pin.findings.some(f => f.category === 'Critical'));
+                  hasCriticalFindings;
 
-console.log('Pin', pin.id, 'is cheating:', isCheating);
+console.log('Pin', pin.id, 'findings count:', findings.length, 'hasCritical:', hasCriticalFindings, 'isCheating:', isCheating);
 
 // Count by status/result
 if (isCheating) {
     metrics.cheatingScans++;
     console.log('Counted as cheating:', pin.id);
-} else if (pin.findings && pin.findings.length > 0) {
-    // Has findings but not critical = suspicious
-    metrics.suspiciousScans++;
-    console.log('Counted as suspicious:', pin.id);
-} else if (pin.status === 'finished') {
+} else if (hasFindings && findings.length > 0) {
+    // Has findings but no critical = suspicious
+    if (hasWarningFindings || hasSuspiciousFindings) {
+        metrics.suspiciousScans++;
+        console.log('Counted as suspicious:', pin.id);
+    } else {
+        metrics.legitScans++;
+        console.log('Counted as legit:', pin.id);
+    }
+} else if (pin.status === 'finished' || pin.status === 'completed') {
     if (pin.result === 'none' || pin.result === 'clean' || pin.result === 'safe') {
         metrics.legitScans++;
         console.log('Counted as legit:', pin.id);
@@ -2714,9 +2770,13 @@ if (isCheating) {
         metrics.suspiciousScans++;
         console.log('Counted as suspicious (finished with issues):', pin.id);
     }
-} else if (pin.status === 'pending' || pin.status === 'running' || pin.status === 'active') {
+} else if (pin.status === 'pending' || pin.status === 'running' || pin.status === 'active' || pin.status === 'initializing') {
     metrics.suspiciousScans++; // Count pending as suspicious
     console.log('Counted as suspicious (pending):', pin.id);
+} else if (!hasFindings) {
+    // No findings data yet, count as suspicious
+    metrics.suspiciousScans++;
+    console.log('Counted as suspicious (no findings):', pin.id);
 } else {
     // Default to legit if no issues found
     metrics.legitScans++;
