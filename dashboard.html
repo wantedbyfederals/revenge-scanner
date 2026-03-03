@@ -452,13 +452,38 @@ border-radius: 8px;
 padding: 1rem;
 margin: 1rem 0;
 border: 1px solid rgba(255, 255, 255, 0.1);
+position: relative;
+overflow: hidden;
+}
+
+.pin-details::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255, 65, 65, 0.05), transparent);
+animation: shimmer 4s infinite;
 }
 
 .pin-detail-row {
 display: flex;
 justify-content: space-between;
-padding: 0.5rem 0;
+align-items: center;
+padding: 0.75rem 0;
 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+transition: all 0.3s ease;
+position: relative;
+z-index: 1;
+}
+
+.pin-detail-row:hover {
+background: rgba(255, 255, 255, 0.02);
+padding-left: 0.5rem;
+padding-right: 0.5rem;
+margin: 0 -0.5rem;
+border-radius: 6px;
 }
 
 .pin-detail-row:last-child {
@@ -466,14 +491,24 @@ border-bottom: none;
 }
 
 .pin-detail-label {
+display: flex;
+align-items: center;
+gap: 0.5rem;
 color: #94a3b8;
 font-size: 0.875rem;
+font-weight: 600;
+}
+
+.pin-detail-label i {
+font-size: 0.75rem;
+color: var(--accent);
 }
 
 .pin-detail-value {
 color: white;
 font-weight: 700;
 font-size: 0.875rem;
+text-transform: capitalize;
 }
 
 .progress-container {
@@ -659,15 +694,21 @@ Delete Scan
 </div>
 <div class="pin-details">
 <div class="pin-detail-row">
-<span class="pin-detail-label">Name:</span>
+<span class="pin-detail-label">
+<i class="fa fa-tag"></i> Name
+</span>
 <span class="pin-detail-value" id="pinDetailName">--</span>
 </div>
 <div class="pin-detail-row">
-<span class="pin-detail-label">Game:</span>
+<span class="pin-detail-label">
+<i class="fa fa-gamepad"></i> Game
+</span>
 <span class="pin-detail-value" id="pinDetailGame">--</span>
 </div>
 <div class="pin-detail-row">
-<span class="pin-detail-label">Mode:</span>
+<span class="pin-detail-label">
+<i class="fa fa-cog"></i> Mode
+</span>
 <span class="pin-detail-value" id="pinDetailMode">--</span>
 </div>
 </div>
