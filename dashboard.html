@@ -1509,9 +1509,26 @@ let legitPins = 0;
 let cheatingPins = 0;
 let suspiciousPins = 0;
 
+if (!data || typeof data !== 'object') {
+console.log('No data available or invalid data format');
+grid.innerHTML = `
+<div class="col-span-full py-16 flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-white/5 rounded-2xl">
+<i class="fa fa-folder-open text-4xl mb-4"></i>
+<span class="text-sm font-black uppercase italic tracking-[0.3em]">No scans found</span>
+<span class="text-xs text-gray-500 mt-2">Generate a PIN to start scanning</span>
+</div>`;
+return;
+}
+
 for (let pin in data) {
+try {
 const pinData = data[pin];
 console.log('Processing pin:', pin, pinData);
+
+if (!pinData || typeof pinData !== 'object') {
+console.log('Skipping invalid pin data for:', pin);
+continue;
+}
 
 const isUsed = pinData.findings && pinData.findings.findings && pinData.findings.findings.length > 0;
 const isExpired = new Date() - new Date(pinData.timestamp) > 24 * 60 * 60 * 1000;
@@ -1548,6 +1565,10 @@ grid.innerHTML += `
 <div class="pin-card-date">${pinData.timestamp}</div>
 </div>
 </div>`;
+} catch (pinError) {
+console.error('Error processing pin:', pin, pinError);
+continue;
+}
 }
 
 console.log('Final counts - Total:', totalPins, 'Legit:', legitPins, 'Cheating:', cheatingPins, 'Suspicious:', suspiciousPins);
@@ -1558,15 +1579,26 @@ document.getElementById('legitPins').textContent = legitPins;
 document.getElementById('cheatingPins').textContent = cheatingPins;
 document.getElementById('suspiciousPins').textContent = suspiciousPins;
 
+if (totalPins === 0) {
+grid.innerHTML = `
+<div class="col-span-full py-16 flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-white/5 rounded-2xl">
+<i class="fa fa-folder-open text-4xl mb-4"></i>
+<span class="text-sm font-black uppercase italic tracking-[0.3em]">No scans found</span>
+<span class="text-xs text-gray-500 mt-2">Generate a PIN to start scanning</span>
+</div>`;
+}
+
 } catch (error) {
 console.error('Error loading pins:', error);
+console.error('Error details:', error.message, error.stack);
 // Show error message to user
 const grid = document.getElementById('pins-grid');
 grid.innerHTML = `
 <div class="col-span-full py-16 flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-white/5 rounded-2xl">
 <i class="fa fa-exclamation-triangle text-4xl mb-4 text-red-500"></i>
 <span class="text-sm font-black uppercase italic tracking-[0.3em]">Error loading data</span>
-<span class="text-xs text-gray-500 mt-2">Please check your connection and try again</span>
+<span class="text-xs text-gray-500 mt-2">Error: ${error.message}</span>
+<span class="text-xs text-blue-400 mt-2">Check console for details</span>
 </div>`;
 }
 }
