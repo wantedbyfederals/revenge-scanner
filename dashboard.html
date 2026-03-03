@@ -2074,6 +2074,7 @@ let detectionChart = null;
 
 async function initializeCharts() {
 try {
+console.log('Fetching data from Firebase...');
 // Fetch real data from Firebase
 const pinsResponse = await fetch(`${DB_URL}/pins.json`);
 const pinsData = await pinsResponse.json();
@@ -2089,12 +2090,16 @@ if (pinsData) {
             // Add the pin ID to the data object
             pinData.id = pinId;
             pins.push(pinData);
+            console.log(`Added pin ${pinId}:`, pinData);
         }
     });
 }
 
-console.log('Processed pins:', pins.length, 'pins');
-console.log('Pin structure sample:', pins[0]);
+console.log('Total processed pins:', pins.length, 'pins');
+if (pins.length > 0) {
+    console.log('First pin structure:', pins[0]);
+    console.log('Second pin structure:', pins[1]);
+}
 
 // Process data for charts
 const monthlyData = processMonthlyData(pins);
@@ -2742,6 +2747,7 @@ return metrics;
 }
 
 function animateValue(element, start, end, duration, type) {
+console.log(`Animating ${type}: from ${start} to ${end}`);
 const startTime = performance.now();
 const isNumber = typeof end === 'number';
 const endValue = isNumber ? end : end;
@@ -2760,6 +2766,8 @@ element.textContent = endValue;
 
 if (progress < 1) {
 requestAnimationFrame(update);
+} else {
+console.log(`Animation complete for ${type}: final value ${endValue}`);
 }
 }
 
@@ -2770,6 +2778,7 @@ window.onload = () => {
 if(localStorage.getItem('auth_status') === 'granted') {
 showMainUI();
 setTimeout(() => {
+console.log('Starting dashboard initialization...');
 initializeCharts();
 updateMetrics();
 }, 500);
