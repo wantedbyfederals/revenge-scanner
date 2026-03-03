@@ -588,14 +588,27 @@ position: relative;
 }
 
 .pins-table th {
-background: linear-gradient(135deg, rgba(255, 65, 65, 0.15), rgba(255, 65, 65, 0.05));
+background: linear-gradient(135deg, rgba(255, 65, 65, 0.25), rgba(255, 65, 65, 0.1));
 color: white;
 font-weight: 900;
 text-transform: uppercase;
-font-size: 0.8rem;
+font-size: 0.85rem;
 letter-spacing: 0.1em;
 border-bottom: 2px solid var(--accent);
-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+padding: 18px 20px;
+position: relative;
+}
+
+.pins-table th::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+animation: shimmer 6s infinite;
 }
 
 .pins-table tbody tr {
@@ -604,54 +617,157 @@ position: relative;
 }
 
 .pins-table tbody tr:hover {
-background: linear-gradient(90deg, rgba(255, 65, 65, 0.08), rgba(255, 65, 65, 0.02));
-transform: translateX(4px);
-box-shadow: 0 4px 12px rgba(255, 65, 65, 0.15);
+background: linear-gradient(90deg, rgba(255, 65, 65, 0.12), rgba(255, 65, 65, 0.04));
+transform: translateX(6px);
+box-shadow: 0 6px 20px rgba(255, 65, 65, 0.2);
+border-radius: 8px;
 }
 
 .pins-table tbody tr:hover td {
 color: white;
+text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .pins-table .status-finished {
 color: #22c55e;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .status-finished::before {
+content: '\f00c';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .status-pending {
 color: #f59e0b;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .status-pending::before {
+content: '\f252';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .status-expired {
 color: #ef4444;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .status-expired::before {
+content: '\f071';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .used-yes {
 color: #22c55e;
 font-weight: 700;
 text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .used-yes::before {
+content: '\f058';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .used-no {
 color: #94a3b8;
 font-weight: 700;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .used-no::before {
+content: '\f057';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
+}
+
+.pins-table .result-cheating {
+color: #ef4444;
+font-weight: 700;
+text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .result-cheating::before {
+content: '\f071';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
+}
+
+.pins-table .result-none {
+color: #94a3b8;
+font-weight: 700;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .result-none::before {
+content: '\f058';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .mode-kernel {
-color: #8b5cf6;
+color: #ff4141;
 font-weight: 700;
-text-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+text-shadow: 0 0 8px rgba(255, 65, 65, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .mode-kernel::before {
+content: '\f085';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .mode-user {
-color: #06b6d4;
+color: #ff6b6b;
 font-weight: 700;
-text-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
+text-shadow: 0 0 8px rgba(255, 107, 107, 0.3);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pins-table .mode-user::before {
+content: '\f007';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pins-table .result-cheating {
@@ -666,24 +782,38 @@ font-weight: 700;
 }
 
 .pins-table .actions-menu {
-background: rgba(255, 255, 255, 0.05);
-border: 1px solid rgba(255, 255, 255, 0.1);
+background: linear-gradient(135deg, rgba(255, 65, 65, 0.15), rgba(255, 65, 65, 0.05));
+border: 1px solid rgba(255, 65, 65, 0.3);
 color: #e2e8f0;
 font-size: 1.1rem;
 cursor: pointer;
-padding: 8px 12px;
-border-radius: 8px;
+padding: 10px 14px;
+border-radius: 10px;
 transition: all 0.3s ease;
 display: flex;
 align-items: center;
-gap: 6px;
+gap: 8px;
+position: relative;
+overflow: hidden;
+}
+
+.pins-table .actions-menu::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+animation: shimmer 4s infinite;
 }
 
 .pins-table .actions-menu:hover {
-background: var(--accent);
+background: linear-gradient(135deg, var(--accent), #ff2020);
 color: white;
-transform: scale(1.05);
-box-shadow: 0 4px 12px rgba(255, 65, 65, 0.4);
+transform: scale(1.08);
+box-shadow: 0 6px 20px rgba(255, 65, 65, 0.4);
+border-color: var(--accent);
 }
 
 .search-filter-container {
