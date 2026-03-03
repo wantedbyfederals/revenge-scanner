@@ -548,18 +548,139 @@ transition: width 0.5s ease;
 width: 0%;
 }
 
-.progress-message {
-color: #94a3b8;
-font-size: 0.75rem;
-margin-top: 0.5rem;
-text-align: center;
+.pins-table-container {
+background: var(--panel-bg);
+border: 1px solid var(--glass-border);
+border-radius: 12px;
+padding: 1.5rem;
+margin-top: 2rem;
+box-shadow: 0 6px 25px rgba(0,0,0,0.35);
 }
 
-.pin-expiry {
-text-align: center;
+.pins-table {
+width: 100%;
+border-collapse: collapse;
+}
+
+.pins-table th,
+.pins-table td {
+padding: 12px 15px;
+text-align: left;
+border-bottom: 1px solid var(--glass-border);
+color: #e2e8f0;
+}
+
+.pins-table th {
+background: rgba(255, 65, 65, 0.1);
+color: white;
+font-weight: 700;
+text-transform: uppercase;
+font-size: 0.75rem;
+letter-spacing: 0.05em;
+}
+
+.pins-table tbody tr:hover {
+background: rgba(255, 65, 65, 0.05);
+}
+
+.pins-table .status-finished {
+color: #22c55e;
+font-weight: 700;
+}
+
+.pins-table .status-pending {
+color: #eab308;
+font-weight: 700;
+}
+
+.pins-table .status-expired {
+color: #ef4444;
+font-weight: 700;
+}
+
+.pins-table .used-yes {
+color: #22c55e;
+font-weight: 700;
+}
+
+.pins-table .used-no {
+color: #ef4444;
+font-weight: 700;
+}
+
+.pins-table .mode-kernel {
+color: #3b82f6;
+font-weight: 700;
+}
+
+.pins-table .mode-user {
+color: #a855f7;
+font-weight: 700;
+}
+
+.pins-table .result-cheating {
+color: #ef4444;
+font-weight: 700;
+}
+
+.pins-table .result-none {
+color: #94a3b8;
+font-weight: 700;
+}
+
+.pins-table .actions-menu {
+background: none;
+border: none;
+color: #94a3b8;
+font-size: 1rem;
+cursor: pointer;
+padding: 4px 8px;
+border-radius: 4px;
+transition: all 0.2s ease;
+}
+
+.pins-table .actions-menu:hover {
+color: var(--accent);
+background: rgba(255, 65, 65, 0.1);
+}
+
+.search-filter-container {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 1.5rem;
+}
+
+.search-input-wrapper {
+position: relative;
+flex-grow: 1;
+margin-right: 1rem;
+}
+
+.search-input {
+width: 100%;
+padding: 10px 10px 10px 40px;
+background: rgba(255, 255, 255, 0.05);
+border: 1px solid var(--glass-border);
+border-radius: 8px;
+color: white;
+font-size: 0.875rem;
+outline: none;
+transition: all 0.2s ease;
+}
+
+.search-input:focus {
+border-color: var(--accent);
+box-shadow: 0 0 0 2px rgba(255, 65, 65, 0.2);
+}
+
+.search-icon {
+position: absolute;
+left: 12px;
+top: 50%;
+transform: translateY(-50%);
 color: #94a3b8;
 font-size: 0.875rem;
-margin: 1rem 0;
 }
 </style>
 </head>
@@ -619,20 +740,37 @@ margin: 1rem 0;
 <h1 class="text-4xl font-black italic tracking-tight text-white">SCANS DATABASE</h1>
 <p class="text-gray-500 text-xs font-bold uppercase mt-2">Real-time Terminal Monitoring</p>
 </div>
-<div class="flex items-center gap-4">
-<div class="relative group">
-  <div class="relative flex items-center bg-red-500/10 border border-red-500/30 rounded-xl overflow-hidden backdrop-blur-sm group hover:bg-red-500/20 group hover:border-red-500/50 transition-all duration-300">
-    <input type="text" id="scan-search" onkeyup="filterPins()" placeholder="SEARCH DATABASE..." 
-    class="flex-1 bg-transparent py-4 px-4 text-[10px] font-mono outline-none text-white placeholder-red-300/60 group-hover:placeholder-red-300 transition-all duration-300">
-  </div>
-  <div class="absolute inset-0 rounded-xl border border-red-500/20 pointer-events-none"></div>
+<div class="search-filter-container">
+<div class="search-input-wrapper">
+<i class="fa fa-search search-icon"></i>
+<input type="text" id="scan-search" onkeyup="filterPinsTable()" placeholder="SEARCH DATABASE..." 
+class="search-input">
 </div>
 <button onclick="generatePIN()" class="btn-action bg-white text-black px-8 py-4 rounded-xl hover:bg-red-600 hover:text-white shadow-2xl">
 GENERATE PIN
 </button>
 </div>
 </div>
-<div id="pins-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+<div class="pins-table-container">
+<table class="pins-table">
+<thead>
+<tr>
+<th>PIN</th>
+<th>Name</th>
+<th>Game</th>
+<th>Status</th>
+<th>Used</th>
+<th>Result</th>
+<th>Mode</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="pins-table-body">
+<!-- Pins will be loaded here -->
+</tbody>
+</table>
+</div>
 </div>
 
 <div id="view-detail" class="hidden">
@@ -812,38 +950,65 @@ loadPins();
 async function loadPins() {
 const res = await fetch(`${DB_URL}/pins.json`);
 const data = await res.json();
-const grid = document.getElementById('pins-grid');
-grid.innerHTML = "";
+const tableBody = document.getElementById('pins-table-body');
+tableBody.innerHTML = '';
 
 for (let pin in data) {
-grid.innerHTML += `
-<div onclick="openReport('${pin}')" class="pin-card p-8 rounded-xl">
-<div class="flex justify-between items-center mb-4">
-<span class="text-[11px] font-bold text-red-500 font-mono tracking-[0.2em] uppercase">
-PIN #${pin}
-</span>
-<div class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_8px_#ff4141]"></div>
-</div>
-<h3 class="font-black text-2xl italic uppercase tracking-tighter text-white">
-${data[pin].pcName || "INITIALIZING..."}
-</h3>
-<p class="text-[10px] text-gray-500 font-bold uppercase mt-2 tracking-widest opacity-60">
-${data[pin].timestamp}
-</p>
-</div>`;
+const pinData = data[pin];
+const isUsed = pinData.findings && pinData.findings.findings && pinData.findings.findings.length > 0;
+const isExpired = new Date() - new Date(pinData.timestamp) > 24 * 60 * 60 * 1000;
+const hasCheating = pinData.findings && pinData.findings.findings && 
+pinData.findings.findings.some(f => !f.category || f.category === 'Critical');
+
+let status = 'pending';
+let statusClass = 'status-pending';
+if (isExpired) {
+status = 'expired';
+statusClass = 'status-expired';
+} else if (isUsed) {
+status = 'finished';
+statusClass = 'status-finished';
+}
+
+const usedClass = isUsed ? 'used-yes' : 'used-no';
+const usedText = isUsed ? 'YES' : 'NO';
+
+const modeClass = pinData.mode === 'Kernel Mode' ? 'mode-kernel' : 'mode-user';
+const modeText = pinData.mode || 'User Mode';
+
+const resultClass = hasCheating ? 'result-cheating' : 'result-none';
+const resultText = hasCheating ? 'CHEATING' : 'NONE';
+
+const gameText = pinData.game ? pinData.game.charAt(0).toUpperCase() + pinData.game.slice(1) : 'FiveM';
+
+tableBody.innerHTML += `
+<tr>
+<td><span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent);">${pin}</span></td>
+<td>${pinData.pcName || 'Untitled Scan'}</td>
+<td>${gameText}</td>
+<td class="${statusClass}">${status.toUpperCase()}</td>
+<td class="${usedClass}">${usedText}</td>
+<td class="${resultClass}">${resultText}</td>
+<td class="${modeClass}">${modeText}</td>
+<td>
+<button class="actions-menu" onclick="openReport('${pin}')">
+<i class="fa fa-ellipsis-v"></i>
+</button>
+</td>
+</tr>`;
 }
 }
 
-function filterPins() {
+function filterPinsTable() {
 const input = document.getElementById('scan-search').value.toUpperCase();
-const cards = document.querySelectorAll('.pin-card');
+const rows = document.querySelectorAll('#pins-table-body tr');
 
-cards.forEach(card => {
-const text = card.textContent || card.innerText;
+rows.forEach(row => {
+const text = row.textContent || row.innerText;
 if (text.toUpperCase().indexOf(input) > -1) {
-card.style.display = "";
+row.style.display = "";
 } else {
-card.style.display = "none";
+row.style.display = "none";
 }
 });
 }
