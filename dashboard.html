@@ -40,7 +40,7 @@ border-radius: 12px;
 .pin-card {
 cursor: pointer;
 transition: all 0.3s ease;
-background: linear-gradient(145deg, #1a1a1f 0%, #0f0f13 100%);
+background: rgba(0, 0, 0, 0.2);
 border: 1px solid rgba(255, 65, 65, 0.2);
 position: relative;
 overflow: hidden;
@@ -2651,12 +2651,20 @@ console.log('Metrics - Processed pins:', pins.length, 'pins');
 const metrics = calculateRealMetrics(pins);
 console.log('Calculated metrics:', metrics);
 
+// Calculate percentage changes
+const changes = await calculatePercentageChanges(pins);
+console.log('Calculated percentage changes:', changes);
+
+// Update metric values
 Object.keys(metrics).forEach(key => {
 const element = document.getElementById(key);
 if (element) {
 animateValue(element, 0, metrics[key], 2000, key);
 }
 });
+
+// Update percentage indicators
+updatePercentageIndicators(changes);
 
 } catch (error) {
 console.error('Error loading metrics data:', error);
