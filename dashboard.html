@@ -39,53 +39,97 @@ border-radius: 12px;
 .pin-card {
 cursor: pointer;
 transition: all 0.3s ease;
-background: linear-gradient(145deg, #121217 0%, #0a0a0c 100%);
-border: 1px solid var(--glass-border);
+background: linear-gradient(145deg, #1a1a1f 0%, #0f0f13 100%);
+border: 1px solid rgba(255, 65, 65, 0.2);
 position: relative;
 overflow: hidden;
 border-left: 4px solid var(--accent);
-border-radius: 12px;
-padding: 1.5rem;
-margin-bottom: 1rem;
-box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+border-radius: 16px;
+padding: 2rem;
+margin-bottom: 1.5rem;
+box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.pin-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255, 65, 65, 0.05), transparent);
+animation: shimmer 6s infinite;
+pointer-events: none;
 }
 
 .pin-card:hover {
 border-color: var(--accent);
-transform: translateY(-4px);
-box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+transform: translateY(-6px) scale(1.02);
+box-shadow: 0 12px 40px rgba(255, 65, 65, 0.3);
 }
 
 .pin-card-header {
 display: flex;
 justify-content: space-between;
 align-items: center;
-margin-bottom: 1rem;
+margin-bottom: 1.5rem;
+position: relative;
 }
 
 .pin-card-pin {
 font-family: 'JetBrains Mono', monospace;
 font-weight: 900;
-font-size: 1rem;
+font-size: 1.2rem;
 color: var(--accent);
-letter-spacing: 0.1em;
+letter-spacing: 0.15em;
+text-shadow: 0 0 12px rgba(255, 65, 65, 0.6);
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.pin-card-pin::before {
+content: '\f084';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.9rem;
 }
 
 .pin-card-status {
-width: 8px;
-height: 8px;
+width: 10px;
+height: 10px;
 border-radius: 50%;
 background: var(--accent);
-box-shadow: 0 0 8px rgba(255, 65, 65, 0.5);
+box-shadow: 0 0 12px rgba(255, 65, 65, 0.6);
+position: relative;
+}
+
+.pin-card-status::before {
+content: '';
+position: absolute;
+top: -2px;
+left: -2px;
+right: -2px;
+bottom: -2px;
+background: rgba(255, 65, 65, 0.2);
+border-radius: 50%;
+animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+0% { transform: scale(0.95); opacity: 1; }
+50% { transform: scale(1.1); opacity: 0.8; }
+100% { transform: scale(0.95); opacity: 1; }
 }
 
 .pin-card-title {
-font-size: 1.25rem;
+font-size: 1.4rem;
 font-weight: 900;
 color: white;
-margin-bottom: 0.5rem;
+margin-bottom: 1rem;
 text-transform: uppercase;
-letter-spacing: 0.05em;
+letter-spacing: 0.08em;
+text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .pin-card-meta {
@@ -93,39 +137,82 @@ display: flex;
 justify-content: space-between;
 align-items: center;
 gap: 1rem;
+margin-bottom: 1rem;
 }
 
 .pin-card-game,
 .pin-card-mode {
-font-size: 0.875rem;
-font-weight: 600;
-padding: 4px 8px;
-border-radius: 6px;
+font-size: 0.9rem;
+font-weight: 700;
+padding: 6px 12px;
+border-radius: 8px;
 text-transform: uppercase;
-letter-spacing: 0.05em;
+letter-spacing: 0.08em;
+display: flex;
+align-items: center;
+gap: 6px;
+transition: all 0.2s ease;
 }
 
 .pin-card-game {
-background: rgba(255, 65, 65, 0.15);
+background: rgba(255, 65, 65, 0.2);
 color: #ff6b6b;
+border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.pin-card-game::before {
+content: '\f11b';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pin-card-mode {
-background: rgba(255, 65, 65, 0.15);
+background: rgba(255, 65, 65, 0.2);
 color: #ff4141;
+border: 1px solid rgba(255, 65, 65, 0.3);
+}
+
+.pin-card-mode::before {
+content: '\f085';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.8rem;
 }
 
 .pin-card-footer {
-margin-top: 1rem;
-padding-top: 1rem;
-border-top: 1px solid rgba(255, 255, 255, 0.1);
+margin-top: 1.5rem;
+padding-top: 1.5rem;
+border-top: 1px solid rgba(255, 255, 255, 0.15);
+position: relative;
+}
+
+.pin-card-footer::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, rgba(255, 65, 65, 0.3), transparent);
+animation: shimmer 4s infinite;
 }
 
 .pin-card-date {
-font-size: 0.75rem;
+font-size: 0.8rem;
 color: #94a3b8;
 text-transform: uppercase;
-letter-spacing: 0.05em;
+letter-spacing: 0.08em;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.pin-card-date::before {
+content: '\f017';
+font-family: 'Font Awesome 6 Free';
+font-weight: 900;
+font-size: 0.7rem;
 }
 
 .finding-entry {
