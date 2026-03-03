@@ -2077,9 +2077,24 @@ try {
 // Fetch real data from Firebase
 const pinsResponse = await fetch(`${DB_URL}/pins.json`);
 const pinsData = await pinsResponse.json();
-const pins = pinsData ? Object.values(pinsData) : [];
 
-console.log('Charts - Pins loaded:', pins.length, 'pins');
+console.log('Raw Firebase data:', pinsData);
+
+// Convert to array and handle nested structure
+const pins = [];
+if (pinsData) {
+    Object.keys(pinsData).forEach(pinId => {
+        const pinData = pinsData[pinId];
+        if (pinData && typeof pinData === 'object') {
+            // Add the pin ID to the data object
+            pinData.id = pinId;
+            pins.push(pinData);
+        }
+    });
+}
+
+console.log('Processed pins:', pins.length, 'pins');
+console.log('Pin structure sample:', pins[0]);
 
 // Process data for charts
 const monthlyData = processMonthlyData(pins);
@@ -2392,27 +2407,46 @@ let monthTotal = 0;
 let monthCheating = 0;
 
 pins.forEach(pin => {
+console.log('Processing pin:', pin.id, pin);
+    
 // Check if pin has a timestamp (created, timestamp, or any date field)
-const pinDate = pin.created ? new Date(pin.created) : 
-pin.timestamp ? new Date(pin.timestamp) : 
-pin.date ? new Date(pin.date) : null;
+let pinDate = null;
+if (pin.created) {
+    pinDate = new Date(pin.created);
+} else if (pin.timestamp) {
+    pinDate = new Date(pin.timestamp);
+} else if (pin.date) {
+    pinDate = new Date(pin.date);
+} else if (pin.findings) {
+    // If no date fields, assume current month
+    pinDate = new Date();
+}
 
 if (pinDate && !isNaN(pinDate.getTime())) {
-if (pinDate.getMonth() === date.getMonth() && pinDate.getFullYear() === date.getFullYear()) {
-monthTotal++;
-// Check for cheating detection more thoroughly
-if (pin.result === 'cheating' || 
-pin.status === 'cheating' ||
-pin.detection === 'cheating' ||
-(pin.findings && pin.findings.some(f => f.type === 'cheating'))) {
-monthCheating++;
-}
-}
+    if (pinDate.getMonth() === date.getMonth() && pinDate.getFullYear() === date.getFullYear()) {
+        monthTotal++;
+        console.log('Pin counted for month:', pin.id);
+        
+        // Check for cheating detection more thoroughly
+        const isCheating = pin.result === 'cheating' || 
+                          pin.status === 'cheating' ||
+                          pin.detection === 'cheating' ||
+                          (pin.findings && pin.findings.some(f => f.type === 'cheating')) ||
+                          (pin.findings && pin.findings.some(f => f.category === 'Critical'));
+        
+        if (isCheating) {
+            monthCheating++;
+            console.log('Cheating detected for pin:', pin.id);
+        }
+    }
+} else {
+    console.log('Invalid date for pin:', pin.id, pinDate);
 }
 });
 
 monthlyData.totalScans.push(monthTotal);
 monthlyData.cheatingScans.push(monthCheating);
+console.log(`Month ${monthLabel}: ${monthTotal} total, ${monthCheating} cheating`);
 }
 
 return monthlyData;
@@ -2506,9 +2540,23 @@ try {
 // Fetch real data from Firebase
 const pinsResponse = await fetch(`${DB_URL}/pins.json`);
 const pinsData = await pinsResponse.json();
-const pins = pinsData ? Object.values(pinsData) : [];
 
-console.log('Pins loaded:', pins.length, 'pins');
+console.log('Metrics - Raw Firebase data:', pinsData);
+
+// Convert to array and handle nested structure
+const pins = [];
+if (pinsData) {
+    Object.keys(pinsData).forEach(pinId => {
+        const pinData = pinsData[pinId];
+        if (pinData && typeof pinData === 'object') {
+            // Add the pin ID to the data object
+            pinData.id = pinId;
+            pins.push(pinData);
+        }
+    });
+}
+
+console.log('Metrics - Processed pins:', pins.length, 'pins');
 
 // Calculate real metrics
 const metrics = calculateRealMetrics(pins);
@@ -2619,6 +2667,8 @@ changeElement.innerHTML = `
 }
 
 function calculateRealMetrics(pins) {
+console.log('Calculating metrics for', pins.length, 'pins');
+
 const metrics = {
 totalScans: pins.length,
 legitScans: 0,
@@ -2632,47 +2682,62 @@ let totalScanTime = 0;
 let scanTimeCount = 0;
 
 pins.forEach(pin => {
+console.log('Analyzing pin:', pin.id, pin);
+    
 // Check for cheating detection more thoroughly
 const isCheating = pin.result === 'cheating' || 
-pin.status === 'cheating' ||
-pin.detection === 'cheating' ||
-(pin.findings && pin.findings.some(f => f.type === 'cheating'));
+                  pin.status === 'cheating' ||
+                  pin.detection === 'cheating' ||
+                  (pin.findings && pin.findings.some(f => f.type === 'cheating')) ||
+                  (pin.findings && pin.findings.some(f => f.category === 'Critical'));
+
+console.log('Pin', pin.id, 'is cheating:', isCheating);
 
 // Count by status/result
 if (isCheating) {
-metrics.cheatingScans++;
+    metrics.cheatingScans++;
+    console.log('Counted as cheating:', pin.id);
+} else if (pin.findings && pin.findings.length > 0) {
+    // Has findings but not critical = suspicious
+    metrics.suspiciousScans++;
+    console.log('Counted as suspicious:', pin.id);
 } else if (pin.status === 'finished') {
-if (pin.result === 'none' || pin.result === 'clean' || pin.result === 'safe') {
-metrics.legitScans++;
-} else {
-metrics.suspiciousScans++;
-}
+    if (pin.result === 'none' || pin.result === 'clean' || pin.result === 'safe') {
+        metrics.legitScans++;
+        console.log('Counted as legit:', pin.id);
+    } else {
+        metrics.suspiciousScans++;
+        console.log('Counted as suspicious (finished with issues):', pin.id);
+    }
 } else if (pin.status === 'pending' || pin.status === 'running' || pin.status === 'active') {
-metrics.suspiciousScans++; // Count pending as suspicious
+    metrics.suspiciousScans++; // Count pending as suspicious
+    console.log('Counted as suspicious (pending):', pin.id);
 } else {
-metrics.suspiciousScans++;
+    // Default to legit if no issues found
+    metrics.legitScans++;
+    console.log('Counted as legit (default):', pin.id);
 }
 
 // Calculate scan time
 if (pin.startTime && pin.endTime) {
-const duration = (new Date(pin.endTime) - new Date(pin.startTime)) / 1000; // in seconds
-totalScanTime += duration;
-scanTimeCount++;
+    const duration = (new Date(pin.endTime) - new Date(pin.startTime)) / 1000; // in seconds
+    totalScanTime += duration;
+    scanTimeCount++;
 }
 });
 
 // Calculate average scan time
 if (scanTimeCount > 0) {
-const avgSeconds = Math.round(totalScanTime / scanTimeCount);
-metrics.avgScanTime = avgSeconds < 60 ? `${avgSeconds}s` : `${Math.round(avgSeconds / 60)}m ${avgSeconds % 60}s`;
+    const avgSeconds = Math.round(totalScanTime / scanTimeCount);
+    metrics.avgScanTime = avgSeconds < 60 ? `${avgSeconds}s` : `${Math.round(avgSeconds / 60)}m ${avgSeconds % 60}s`;
 }
 
-// Calculate success rate (legit scans / total finished scans)
-const finishedScans = pins.filter(pin => pin.status === 'finished').length;
-if (finishedScans > 0) {
-metrics.successRate = `${Math.round((metrics.legitScans / finishedScans) * 100)}%`;
+// Calculate success rate (legit scans / total scans)
+if (metrics.totalScans > 0) {
+    metrics.successRate = `${Math.round((metrics.legitScans / metrics.totalScans) * 100)}%`;
 }
 
+console.log('Final metrics:', metrics);
 return metrics;
 }
 
