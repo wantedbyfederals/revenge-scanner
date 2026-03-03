@@ -1015,6 +1015,61 @@ transition: color 0.3s ease;
 .search-input:focus + .search-icon {
 color: var(--accent);
 }
+.stats-overview {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 1rem;
+margin-top: 2rem;
+margin-bottom: 2rem;
+}
+
+.stat-card {
+background: rgba(0, 0, 0, 0.2);
+border: 1px solid rgba(255, 65, 65, 0.3);
+border-radius: 8px;
+padding: 1.2rem;
+text-align: center;
+position: relative;
+overflow: hidden;
+backdrop-filter: blur(10px);
+transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+background: rgba(255, 65, 65, 0.1);
+border-color: var(--accent);
+transform: translateY(-2px);
+box-shadow: 0 8px 24px rgba(255, 65, 65, 0.2);
+}
+
+.stat-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255, 65, 65, 0.1), transparent);
+animation: shimmer 8s infinite;
+pointer-events: none;
+}
+
+.stat-number {
+font-size: 2rem;
+font-weight: 900;
+color: var(--accent);
+text-shadow: 0 0 8px rgba(255, 65, 65, 0.4);
+margin-bottom: 0.5rem;
+font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-label {
+font-size: 0.75rem;
+color: #e2e8f0;
+text-transform: uppercase;
+letter-spacing: 0.08em;
+font-weight: 600;
+}
 </style>
 </head>
 
