@@ -2694,13 +2694,14 @@ const metrics = calculateRealMetrics(pins);
 const totalPins = pins.length;
 
 // Simple percentage calculation based on total vs individual metrics
+// For security metrics, increases are "positive" (more detections = better security)
 const changes = {
 totalScans: totalPins > 0 ? { value: '+100%', positive: true } : { value: '0%', positive: false },
 legitScans: metrics.legitScans > 0 ? { value: `+${((metrics.legitScans / totalPins) * 100).toFixed(1)}%`, positive: true } : { value: '0%', positive: false },
-cheatingScans: metrics.cheatingScans > 0 ? { value: `+${((metrics.cheatingScans / totalPins) * 100).toFixed(1)}%`, positive: false } : { value: '0%', positive: true },
+cheatingScans: metrics.cheatingScans > 0 ? { value: `+${((metrics.cheatingScans / totalPins) * 100).toFixed(1)}%`, positive: true } : { value: '0%', positive: false },
 suspiciousScans: metrics.suspiciousScans > 0 ? { value: `+${((metrics.suspiciousScans / totalPins) * 100).toFixed(1)}%`, positive: true } : { value: '0%', positive: false },
 avgScanTime: { value: '0%', positive: true },
-successRate: { value: '0%', positive: true }
+successRate: metrics.successRate !== '0%' ? { value: metrics.successRate, positive: true } : { value: '0%', positive: false }
 };
 
 return changes;
